@@ -1,0 +1,226 @@
+---
+interface GasBlob {
+	top: string;
+	left: string;
+	width: string;
+	height: string;
+	gradient: string;
+}
+
+const backBlobs: GasBlob[] = [
+	{
+		top: '-10%',
+		left: '-5%',
+		width: '75vw',
+		height: '55vh',
+		gradient:
+			'radial-gradient(ellipse at 50% 50%, rgba(120, 50, 180, 0.32) 0%, rgba(80, 30, 140, 0.16) 30%, rgba(50, 18, 100, 0.06) 55%, transparent 72%)',
+	},
+	{
+		top: '35%',
+		left: '45%',
+		width: '70vw',
+		height: '50vh',
+		gradient:
+			'radial-gradient(ellipse at 50% 50%, rgba(110, 42, 170, 0.28) 0%, rgba(70, 25, 130, 0.14) 32%, rgba(40, 14, 85, 0.05) 58%, transparent 75%)',
+	},
+];
+
+const frontBlobs: GasBlob[] = [
+	{
+		top: '15%',
+		left: '25%',
+		width: '55vw',
+		height: '42vh',
+		gradient:
+			'radial-gradient(ellipse at 50% 50%, rgba(140, 55, 190, 0.22) 0%, rgba(85, 35, 145, 0.1) 40%, transparent 70%)',
+	},
+	{
+		top: '45%',
+		left: '55%',
+		width: '50vw',
+		height: '38vh',
+		gradient:
+			'radial-gradient(ellipse at 50% 50%, rgba(130, 50, 185, 0.2) 0%, rgba(80, 30, 140, 0.09) 38%, transparent 68%)',
+	},
+];
+---
+
+<div class="nebula-sky" aria-hidden="true">
+	<div class="nebula-void"></div>
+	<div class="nebula-base"></div>
+
+	<div class="nebula-scroll nebula-scroll--back">
+		<div class="nebula-strip">
+			<div class="nebula-panel">
+				{backBlobs.map((blob) => (
+					<span
+						class="gas-blob gas-blob--back"
+						style={{
+							top: blob.top,
+							left: blob.left,
+							width: blob.width,
+							height: blob.height,
+							background: blob.gradient,
+						}}
+					/>
+				))}
+			</div>
+			<div class="nebula-panel" aria-hidden="true">
+				{backBlobs.map((blob) => (
+					<span
+						class="gas-blob gas-blob--back"
+						style={{
+							top: blob.top,
+							left: blob.left,
+							width: blob.width,
+							height: blob.height,
+							background: blob.gradient,
+						}}
+					/>
+				))}
+			</div>
+		</div>
+	</div>
+
+	<div class="nebula-scroll nebula-scroll--front">
+		<div class="nebula-strip nebula-strip--reverse">
+			<div class="nebula-panel">
+				{frontBlobs.map((blob) => (
+					<span
+						class="gas-blob gas-blob--front"
+						style={{
+							top: blob.top,
+							left: blob.left,
+							width: blob.width,
+							height: blob.height,
+							background: blob.gradient,
+						}}
+					/>
+				))}
+			</div>
+			<div class="nebula-panel" aria-hidden="true">
+				{frontBlobs.map((blob) => (
+					<span
+						class="gas-blob gas-blob--front"
+						style={{
+							top: blob.top,
+							left: blob.left,
+							width: blob.width,
+							height: blob.height,
+							background: blob.gradient,
+						}}
+					/>
+				))}
+			</div>
+		</div>
+	</div>
+</div>
+
+<style>
+	.nebula-sky {
+		position: fixed;
+		inset: 0;
+		overflow: hidden;
+		pointer-events: none;
+		z-index: 0;
+		background:
+			radial-gradient(ellipse 120% 80% at 50% 0%, #1a1f3c 0%, transparent 55%),
+			radial-gradient(ellipse 80% 50% at 80% 100%, #12162b 0%, transparent 50%),
+			linear-gradient(180deg, #06080f 0%, #0c1020 40%, #080a14 100%);
+	}
+
+	/* Deep space void — dark blue base */
+	.nebula-void {
+		position: absolute;
+		inset: 0;
+		background:
+			radial-gradient(ellipse 90% 70% at 50% 45%, #12182e 0%, #0a0e1c 45%, #060810 100%),
+			radial-gradient(ellipse 40% 30% at 15% 85%, rgba(40, 20, 70, 0.15) 0%, transparent 70%),
+			radial-gradient(ellipse 35% 25% at 90% 15%, rgba(35, 15, 65, 0.12) 0%, transparent 65%);
+	}
+
+	/* Static purple wash so gas is always visible even between cloud gaps */
+	.nebula-base {
+		position: absolute;
+		inset: 0;
+		background:
+			radial-gradient(ellipse 60% 45% at 25% 40%, rgba(80, 30, 140, 0.12) 0%, transparent 65%),
+			radial-gradient(ellipse 55% 40% at 75% 55%, rgba(95, 38, 155, 0.1) 0%, transparent 60%),
+			radial-gradient(ellipse 70% 50% at 50% 80%, rgba(55, 20, 110, 0.08) 0%, transparent 55%);
+		filter: blur(40px);
+	}
+
+	.nebula-scroll {
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+	}
+
+	.nebula-scroll--back {
+		z-index: 1;
+	}
+
+	.nebula-scroll--front {
+		z-index: 2;
+	}
+
+	.nebula-strip {
+		display: flex;
+		width: max-content;
+		height: 100%;
+		will-change: transform;
+		animation: scroll-left 80s linear infinite;
+	}
+
+	.nebula-strip--reverse {
+		animation-name: scroll-right;
+		animation-duration: 55s;
+	}
+
+	.nebula-panel {
+		position: relative;
+		flex-shrink: 0;
+		width: 100vw;
+		height: 100%;
+	}
+
+	.gas-blob {
+		position: absolute;
+		border-radius: 50%;
+		opacity: 0.55;
+	}
+
+	.gas-blob--back {
+		filter: blur(60px);
+	}
+
+	.gas-blob--front {
+		filter: blur(45px);
+		opacity: 0.4;
+	}
+
+	@keyframes scroll-left {
+		from {
+			transform: translateX(0);
+		}
+		to {
+			transform: translateX(-50%);
+		}
+	}
+
+	@keyframes scroll-right {
+		from {
+			transform: translateX(-50%);
+		}
+		to {
+			transform: translateX(0);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.nebula-strip {
+			animation: none;
+		}
+	}
+</style>

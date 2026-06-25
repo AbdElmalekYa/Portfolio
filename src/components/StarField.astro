@@ -1,0 +1,425 @@
+---
+const STAR_COUNT = 60;
+
+type GlowType = "soft" | "twinkle" | "flare";
+
+interface Star {
+  id: number;
+  x: number;
+  y: number;
+  size: number;
+  glowType: GlowType;
+  glow: ReturnType<typeof getGlowProfile>;
+  delay: number;
+  duration: number;
+  driftX: number;
+  driftY: number;
+  driftDuration: number;
+  driftDelay: number;
+}
+
+const glowTypes: GlowType[] = ["soft", "twinkle", "flare"];
+
+const glowTypeStrength: Record<GlowType, number> = {
+  soft: 0.5,
+  twinkle: 0.68,
+  flare: 0.92,
+};
+
+function getGlowProfile(size: number, glowType: GlowType) {
+  const typeStrength = glowTypeStrength[glowType];
+  const sizeNorm = (size - 1) / 3;
+  const strength = Math.min(
+    1,
+    (0.32 + sizeNorm * 0.38 + typeStrength * 0.28) *
+      (0.9 + Math.random() * 0.2),
+  );
+
+  const haloSize = Math.min(
+    size * (2.5 + strength * 3.4 + typeStrength * 1),
+    14 + size * 3.2,
+  );
+  const spread1 = size * (0.7 + strength * 0.5);
+  const spread2 = size * (1.8 + strength * 1.7);
+  const spread3 = size * (3.4 + strength * 2.8);
+  const spread4 = size * (5.5 + strength * 4.5);
+  const spread5 = size * (8 + strength * 6);
+
+  return {
+    strength,
+    haloSize,
+    spread1,
+    spread2,
+    spread3,
+    spread4,
+    spread5,
+    haloDim: 0.04 + strength * 0.09,
+    haloMid: 0.18 + strength * 0.26,
+    haloPeak: 0.3 + strength * 0.34,
+    haloScaleMin: 0.52 + strength * 0.06,
+    haloScalePeak: 0.78 + strength * 0.28,
+  };
+}
+
+function createStars(count: number): Star[] {
+  return Array.from({ length: count }, (_, i) => {
+    const size = 1 + Math.random() * 3;
+    const glowType = glowTypes[i % 3]!;
+    const glow = getGlowProfile(size, glowType);
+
+    return {
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size,
+      glowType,
+      glow,
+      delay: Math.random() * 8,
+      duration: 3 + Math.random() * 4,
+      driftX: (Math.random() - 0.5) * 14,
+      driftY: (Math.random() - 0.5) * 10,
+      driftDuration: 4 + Math.random() * 10,
+      driftDelay: Math.random() * 4,
+    };
+  });
+}
+
+const stars = createStars(STAR_COUNT);
+---
+
+<div class="star-field" aria-hidden="true">
+  {
+    stars.map((star) => (
+      <span
+        class={`star star--${star.glowType}`}
+        style={{
+          left: `${star.x}%`,
+          top: `${star.y}%`,
+          width: `${star.size}px`,
+          height: `${star.size}px`,
+          "--glow-strength": star.glow.strength,
+          "--halo-size": `${star.glow.haloSize}px`,
+          "--glow-s1": `${star.glow.spread1}px`,
+          "--glow-s2": `${star.glow.spread2}px`,
+          "--glow-s3": `${star.glow.spread3}px`,
+          "--glow-s4": `${star.glow.spread4}px`,
+          "--glow-s5": `${star.glow.spread5}px`,
+          "--halo-dim": star.glow.haloDim,
+          "--halo-mid": star.glow.haloMid,
+          "--halo-peak": star.glow.haloPeak,
+          "--halo-scale-min": star.glow.haloScaleMin,
+          "--halo-scale-peak": star.glow.haloScalePeak,
+          "--drift-x": `${star.driftX}vw`,
+          "--drift-y": `${star.driftY}vh`,
+          "--drift-duration": `${star.driftDuration}s`,
+          "--drift-delay": `${star.driftDelay}s`,
+          "--glow-delay": `${star.delay}s`,
+          "--glow-duration": `${star.duration}s`,
+        }}
+      />
+    ))
+  }
+</div>
+
+<style>
+  .star-field {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 3;
+  }
+
+  .star {
+    position: absolute;
+    border-radius: 50%;
+    background: #ffffff;
+    transform: translate(-50%, -50%);
+    min-width: 2px;
+    min-height: 2px;
+    will-change: transform, opacity;
+  }
+
+  .star::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--halo-size);
+    height: var(--halo-size);
+    border-radius: 50%;
+    transform: translate(-50%, -50%) scale(0.65);
+    background: radial-gradient(
+      circle,
+      rgba(255, 255, 255, 0.48) 0%,
+      rgba(220, 235, 255, 0.16) 26%,
+      rgba(180, 205, 255, 0.06) 46%,
+      transparent 66%
+    );
+    filter: blur(calc(0.8px + var(--glow-strength) * 1.4px));
+    opacity: var(--halo-dim);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .star--soft {
+    opacity: 0.55;
+    box-shadow:
+      0 0 1px rgba(255, 255, 255, 1),
+      0 0 3px rgba(255, 255, 255, 0.7),
+      0 0 8px rgba(200, 220, 255, 0.35);
+    animation:
+      star-drift var(--drift-duration) ease-in-out infinite alternate,
+      glow-soft var(--glow-duration) ease-in-out infinite;
+    animation-delay: var(--drift-delay), var(--glow-delay);
+  }
+
+  .star--soft::after {
+    animation: halo-soft var(--glow-duration) ease-in-out infinite;
+    animation-delay: var(--glow-delay);
+  }
+
+  .star--twinkle {
+    opacity: 0.45;
+    box-shadow:
+      0 0 1px rgba(255, 255, 255, 0.9),
+      0 0 3px rgba(255, 255, 255, 0.55),
+      0 0 6px rgba(200, 220, 255, 0.25);
+    animation:
+      star-drift var(--drift-duration) ease-in-out infinite alternate,
+      glow-twinkle var(--glow-duration) ease-in-out infinite;
+    animation-delay: var(--drift-delay), var(--glow-delay);
+  }
+
+  .star--twinkle::after {
+    animation: halo-twinkle var(--glow-duration) ease-in-out infinite;
+    animation-delay: var(--glow-delay);
+  }
+
+  .star--flare {
+    opacity: 0.5;
+    box-shadow:
+      0 0 1px rgba(255, 255, 255, 1),
+      0 0 4px rgba(255, 255, 255, 0.75),
+      0 0 10px rgba(180, 210, 255, 0.35);
+    animation:
+      star-drift var(--drift-duration) ease-in-out infinite alternate,
+      glow-flare var(--glow-duration) ease-in-out infinite;
+    animation-delay: var(--drift-delay), var(--glow-delay);
+  }
+
+  .star--flare::after {
+    animation: halo-flare var(--glow-duration) ease-in-out infinite;
+    animation-delay: var(--glow-delay);
+  }
+
+  @keyframes star-drift {
+    from {
+      transform: translate(calc(-50% + 0vw), calc(-50% + 0vh));
+    }
+    to {
+      transform: translate(
+        calc(-50% + var(--drift-x)),
+        calc(-50% + var(--drift-y))
+      );
+    }
+  }
+
+  @keyframes glow-soft {
+    0%,
+    100% {
+      opacity: calc(0.35 + var(--glow-strength) * 0.15);
+      box-shadow:
+        0 0 1px rgba(255, 255, 255, 0.8),
+        0 0 var(--glow-s1)
+          rgba(255, 255, 255, calc(0.25 + var(--glow-strength) * 0.25)),
+        0 0 var(--glow-s2)
+          rgba(200, 220, 255, calc(0.1 + var(--glow-strength) * 0.12));
+    }
+    50% {
+      opacity: calc(0.75 + var(--glow-strength) * 0.25);
+      box-shadow:
+        0 0 2px rgba(255, 255, 255, 1),
+        0 0 var(--glow-s1)
+          rgba(255, 255, 255, calc(0.7 + var(--glow-strength) * 0.25)),
+        0 0 var(--glow-s2)
+          rgba(200, 220, 255, calc(0.45 + var(--glow-strength) * 0.25)),
+        0 0 var(--glow-s3)
+          rgba(170, 200, 255, calc(0.2 + var(--glow-strength) * 0.22)),
+        0 0 var(--glow-s4)
+          rgba(140, 175, 255, calc(0.08 + var(--glow-strength) * 0.14)),
+        0 0 var(--glow-s5)
+          rgba(120, 160, 255, calc(0.03 + var(--glow-strength) * 0.08));
+    }
+  }
+
+  @keyframes halo-soft {
+    0%,
+    100% {
+      opacity: var(--halo-dim);
+      transform: translate(-50%, -50%) scale(var(--halo-scale-min));
+    }
+    50% {
+      opacity: var(--halo-peak);
+      transform: translate(-50%, -50%) scale(var(--halo-scale-peak));
+    }
+  }
+
+  @keyframes glow-twinkle {
+    0%,
+    18%,
+    100% {
+      opacity: calc(0.28 + var(--glow-strength) * 0.12);
+      box-shadow:
+        0 0 1px rgba(255, 255, 255, 0.6),
+        0 0 var(--glow-s1)
+          rgba(255, 255, 255, calc(0.18 + var(--glow-strength) * 0.18)),
+        0 0 var(--glow-s2)
+          rgba(200, 220, 255, calc(0.08 + var(--glow-strength) * 0.1));
+    }
+    22% {
+      opacity: calc(0.8 + var(--glow-strength) * 0.2);
+      box-shadow:
+        0 0 2px rgba(255, 255, 255, 1),
+        0 0 var(--glow-s1)
+          rgba(255, 255, 255, calc(0.75 + var(--glow-strength) * 0.2)),
+        0 0 var(--glow-s2)
+          rgba(220, 235, 255, calc(0.5 + var(--glow-strength) * 0.25)),
+        0 0 var(--glow-s3)
+          rgba(190, 215, 255, calc(0.25 + var(--glow-strength) * 0.22)),
+        0 0 var(--glow-s4)
+          rgba(160, 190, 255, calc(0.1 + var(--glow-strength) * 0.14)),
+        0 0 var(--glow-s5)
+          rgba(140, 175, 255, calc(0.04 + var(--glow-strength) * 0.08));
+    }
+    28% {
+      opacity: calc(0.4 + var(--glow-strength) * 0.15);
+      box-shadow:
+        0 0 1px rgba(255, 255, 255, 0.75),
+        0 0 var(--glow-s1)
+          rgba(255, 255, 255, calc(0.35 + var(--glow-strength) * 0.2)),
+        0 0 var(--glow-s2)
+          rgba(200, 220, 255, calc(0.18 + var(--glow-strength) * 0.15));
+    }
+    32% {
+      opacity: calc(0.7 + var(--glow-strength) * 0.2);
+      box-shadow:
+        0 0 2px rgba(255, 255, 255, 1),
+        0 0 var(--glow-s1)
+          rgba(255, 255, 255, calc(0.65 + var(--glow-strength) * 0.2)),
+        0 0 var(--glow-s2)
+          rgba(220, 235, 255, calc(0.38 + var(--glow-strength) * 0.2)),
+        0 0 var(--glow-s3)
+          rgba(190, 215, 255, calc(0.15 + var(--glow-strength) * 0.14));
+    }
+    40%,
+    95% {
+      opacity: calc(0.22 + var(--glow-strength) * 0.1);
+      box-shadow:
+        0 0 1px rgba(255, 255, 255, 0.4),
+        0 0 var(--glow-s1)
+          rgba(200, 220, 255, calc(0.08 + var(--glow-strength) * 0.06));
+    }
+  }
+
+  @keyframes halo-twinkle {
+    0%,
+    18%,
+    100% {
+      opacity: calc(var(--halo-dim) * 0.85);
+      transform: translate(-50%, -50%) scale(calc(var(--halo-scale-min) * 0.92));
+    }
+    22% {
+      opacity: var(--halo-peak);
+      transform: translate(-50%, -50%)
+        scale(calc(var(--halo-scale-peak) * 1.05));
+    }
+    28% {
+      opacity: var(--halo-mid);
+      transform: translate(-50%, -50%)
+        scale(calc((var(--halo-scale-min) + var(--halo-scale-peak)) * 0.45));
+    }
+    32% {
+      opacity: calc(var(--halo-mid) + var(--halo-peak) * 0.35);
+      transform: translate(-50%, -50%)
+        scale(calc((var(--halo-scale-min) + var(--halo-scale-peak)) * 0.55));
+    }
+    40%,
+    95% {
+      opacity: calc(var(--halo-dim) * 0.7);
+      transform: translate(-50%, -50%) scale(calc(var(--halo-scale-min) * 0.85));
+    }
+  }
+
+  @keyframes glow-flare {
+    0%,
+    72%,
+    100% {
+      opacity: calc(0.32 + var(--glow-strength) * 0.12);
+      box-shadow:
+        0 0 1px rgba(255, 255, 255, 0.7),
+        0 0 var(--glow-s1)
+          rgba(255, 255, 255, calc(0.28 + var(--glow-strength) * 0.15)),
+        0 0 var(--glow-s2)
+          rgba(180, 200, 255, calc(0.12 + var(--glow-strength) * 0.1));
+    }
+    78% {
+      opacity: calc(0.85 + var(--glow-strength) * 0.15);
+      box-shadow:
+        0 0 3px rgba(255, 255, 255, 1),
+        0 0 var(--glow-s1) rgba(255, 255, 255, 1),
+        0 0 var(--glow-s2)
+          rgba(200, 225, 255, calc(0.55 + var(--glow-strength) * 0.3)),
+        0 0 var(--glow-s3)
+          rgba(170, 205, 255, calc(0.35 + var(--glow-strength) * 0.28)),
+        0 0 var(--glow-s4)
+          rgba(140, 180, 255, calc(0.15 + var(--glow-strength) * 0.18)),
+        0 0 var(--glow-s5)
+          rgba(120, 160, 255, calc(0.06 + var(--glow-strength) * 0.1));
+    }
+    86% {
+      opacity: calc(0.45 + var(--glow-strength) * 0.15);
+      box-shadow:
+        0 0 2px rgba(255, 255, 255, 0.85),
+        0 0 var(--glow-s1)
+          rgba(255, 255, 255, calc(0.45 + var(--glow-strength) * 0.2)),
+        0 0 var(--glow-s2)
+          rgba(200, 220, 255, calc(0.22 + var(--glow-strength) * 0.16));
+    }
+  }
+
+  @keyframes halo-flare {
+    0%,
+    72%,
+    100% {
+      opacity: calc(var(--halo-dim) * 0.9);
+      transform: translate(-50%, -50%) scale(calc(var(--halo-scale-min) * 0.88));
+    }
+    78% {
+      opacity: var(--halo-peak);
+      transform: translate(-50%, -50%)
+        scale(calc(var(--halo-scale-peak) * 1.12));
+    }
+    86% {
+      opacity: var(--halo-mid);
+      transform: translate(-50%, -50%)
+        scale(calc((var(--halo-scale-min) + var(--halo-scale-peak)) * 0.5));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .star,
+    .star::after {
+      animation: none;
+    }
+
+    .star {
+      opacity: 0.7;
+    }
+
+    .star::after {
+      opacity: calc(var(--halo-dim) + var(--glow-strength) * 0.15);
+      transform: translate(-50%, -50%) scale(calc(var(--halo-scale-min) + 0.15));
+    }
+  }
+</style>
