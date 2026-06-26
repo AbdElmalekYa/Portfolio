@@ -6,8 +6,8 @@ const links = [
   { href: "#contact", label: "Contact" },
 ];
 
-/** Decorative star positions for the mobile drawer background. */
-const drawerStars = Array.from({ length: 14 }, (_, i) => ({
+/** Decorative star positions for the mobile drawer background (kept low for performance). */
+const drawerStars = Array.from({ length: 6 }, (_, i) => ({
   x: `${6 + ((i * 17.3) % 88)}%`,
   y: `${5 + ((i * 13.7) % 90)}%`,
   size: i % 4 === 0 ? 2.5 : i % 2 === 0 ? 1.5 : 1,
@@ -140,7 +140,7 @@ const drawerStars = Array.from({ length: 14 }, (_, i) => ({
   /** Breakpoint matching the mobile drawer styles in CSS. */
   const MOBILE_BREAKPOINT = 768;
 
-  /** Drawer close animation duration — used as a fallback if transitionend never fires. */
+  /** Drawer close animation duration — fallback if transitionend never fires. */
   const DRAWER_CLOSE_MS = 500;
 
   // ── DOM references ──────────────────────────────────────────────────────────
@@ -148,6 +148,7 @@ const drawerStars = Array.from({ length: 14 }, (_, i) => ({
   const navbar = document.querySelector<HTMLElement>("[data-navbar]");
   const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
   const drawer = document.querySelector<HTMLElement>("[data-nav-drawer]");
+  const drawerPanel = drawer?.querySelector<HTMLElement>(".navbar__drawer-panel");
   const indicator = document.querySelector<HTMLElement>("[data-nav-indicator]");
   const navLinks = document.querySelectorAll<HTMLAnchorElement>("[data-nav-link]");
   const desktopLinks = navbar?.querySelectorAll<HTMLAnchorElement>(
@@ -238,16 +239,24 @@ const drawerStars = Array.from({ length: 14 }, (_, i) => ({
     document.body.style.overflow = open ? "hidden" : "";
 
     if (open) {
+      document.body.classList.add("menu-open");
+      drawer.classList.remove("navbar__drawer--closing");
       drawer.removeAttribute("hidden");
-      requestAnimationFrame(() => drawer.classList.add("is-visible"));
+      // Double rAF ensures the browser paints the closed state before animating open.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => drawer.classList.add("is-visible"));
+      });
       return;
     }
 
+    drawer.classList.add("navbar__drawer--closing");
     drawer.classList.remove("is-visible");
+    document.body.classList.remove("menu-open");
 
     const hideDrawer = () => {
       if (!drawer.classList.contains("is-visible")) {
         drawer.setAttribute("hidden", "");
+        drawer.classList.remove("navbar__drawer--closing");
       }
     };
 
@@ -256,8 +265,13 @@ const drawerStars = Array.from({ length: 14 }, (_, i) => ({
       return;
     }
 
-    // transitionend is reliable; timeout is a safety net for interrupted animations.
-    drawer.addEventListener("transitionend", hideDrawer, { once: true });
+    // Wait for the panel fade on close (opacity finishes with the visible slide-out).
+    const onPanelTransitionEnd = (event: TransitionEvent) => {
+      if (event.target !== drawerPanel || event.propertyName !== "opacity") return;
+      hideDrawer();
+    };
+
+    drawerPanel?.addEventListener("transitionend", onPanelTransitionEnd, { once: true });
     setTimeout(hideDrawer, DRAWER_CLOSE_MS);
   };
 
@@ -829,6 +843,11 @@ const drawerStars = Array.from({ length: 14 }, (_, i) => ({
     box-shadow: 0 0 20px rgba(160, 110, 240, 0.2);
   }
 
+  .navbar--open .navbar__track,
+  .navbar--open .navbar__brand-ring {
+    animation-play-state: paused;
+  }
+
   /* ── Mobile drawer (full-screen) ─────────────────────────────────────────── */
 
   .navbar__drawer {
@@ -853,17 +872,26 @@ const drawerStars = Array.from({ length: 14 }, (_, i) => ({
       radial-gradient(ellipse 80% 50% at 50% -10%, rgba(140, 90, 220, 0.18) 0%, transparent 55%),
       radial-gradient(ellipse 60% 40% at 90% 80%, rgba(100, 60, 180, 0.12) 0%, transparent 50%),
       linear-gradient(180deg, rgba(8, 10, 22, 0.99) 0%, rgba(4, 6, 14, 1) 100%);
-    opacity: 0;
-    transform: translateY(2rem);
+    opacity: 1;
+    transform: translate3d(0, 1rem, 0);
     overflow: hidden;
-    transition:
-      opacity 0.45s var(--nav-ease),
-      transform 0.45s var(--nav-ease);
+    will-change: transform;
+    transition: transform 0.28s var(--nav-ease);
   }
 
   .navbar__drawer.is-visible .navbar__drawer-panel {
-    opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
+    will-change: auto;
+  }
+
+  /* Richer fade + slide-out on close (open stays transform-only for performance) */
+  .navbar__drawer--closing .navbar__drawer-panel {
+    opacity: 0;
+    transform: translate3d(0, 2rem, 0);
+    will-change: transform, opacity;
+    transition:
+      opacity 0.45s var(--nav-ease),
+      transform 0.45s var(--nav-ease);
   }
 
   .navbar__drawer-close {
@@ -944,12 +972,18 @@ const drawerStars = Array.from({ length: 14 }, (_, i) => ({
     transform: rotate(-45deg);
   }
 
-  /* Cosmic decorations */
+  /* Cosmic decorations — paused until drawer is fully open */
   .navbar__drawer-cosmos {
     position: absolute;
     inset: 0;
     pointer-events: none;
     overflow: hidden;
+  }
+
+  .navbar__drawer:not(.is-visible) .navbar__drawer-cosmos *,
+  .navbar__drawer:not(.is-visible) .navbar__drawer-cta-shine,
+  .navbar__drawer:not(.is-visible) .navbar__active-bar::after {
+    animation-play-state: paused;
   }
 
   .navbar__drawer-aurora {
@@ -1047,7 +1081,7 @@ const drawerStars = Array.from({ length: 14 }, (_, i) => ({
     z-index: 1;
     margin-bottom: 2rem;
     opacity: 0;
-    transform: translateY(12px);
+    transform: translate3d(0, 12px, 0);
     transition:
       opacity 0.4s var(--nav-ease),
       transform 0.4s var(--nav-ease);
@@ -1056,7 +1090,7 @@ const drawerStars = Array.from({ length: 14 }, (_, i) => ({
 
   .navbar__drawer.is-visible .navbar__drawer-header {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 
   .navbar__drawer-eyebrow {
@@ -1296,7 +1330,7 @@ const drawerStars = Array.from({ length: 14 }, (_, i) => ({
     border-radius: 0.85rem;
     border: 1px solid transparent;
     opacity: 0;
-    transform: translateX(-20px);
+    transform: translate3d(-20px, 0, 0);
     transition:
       color 0.25s ease,
       border-color 0.25s ease,
@@ -1307,7 +1341,7 @@ const drawerStars = Array.from({ length: 14 }, (_, i) => ({
 
   .navbar__drawer.is-visible .navbar__drawer-link {
     opacity: 1;
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
   }
 
   .navbar__drawer-link.is-active {
@@ -1328,7 +1362,7 @@ const drawerStars = Array.from({ length: 14 }, (_, i) => ({
     margin-top: auto;
     padding-top: 1.5rem;
     opacity: 0;
-    transform: translateY(16px);
+    transform: translate3d(0, 16px, 0);
     transition:
       opacity 0.4s var(--nav-ease),
       transform 0.4s var(--nav-ease);
@@ -1337,7 +1371,7 @@ const drawerStars = Array.from({ length: 14 }, (_, i) => ({
 
   .navbar__drawer.is-visible .navbar__drawer-footer {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0);
   }
 
   .navbar__drawer-cta {
@@ -1438,6 +1472,10 @@ const drawerStars = Array.from({ length: 14 }, (_, i) => ({
     .navbar__drawer-link {
       opacity: 1;
       transform: none;
+    }
+
+    .navbar__drawer-panel {
+      will-change: auto;
     }
   }
 </style>

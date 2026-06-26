@@ -67,4 +67,14 @@ import StarField from '../components/StarField.astro';
 	.section-placeholder {
 		min-height: 50vh;
 	}
+
+	/* Pause heavy background animations while the mobile menu is open */
+	body.menu-open .nebula-sky,
+	body.menu-open .nebula-sky *,
+	body.menu-open .star-field,
+	body.menu-open .star-field *,
+	body.menu-open .hero,
+	body.menu-open .hero * {
+		animation-play-state: paused !important;
+	}
 </style>
