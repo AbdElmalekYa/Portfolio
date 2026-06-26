@@ -157,6 +157,9 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
 
   const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+  /** Scroll position preserved while the drawer locks body scroll (iOS-safe). */
+  let lockedScrollY = 0;
+
   // Unique section IDs derived from nav hrefs (e.g. "#work" → "work").
   const sectionIds = [
     ...new Set(
@@ -230,21 +233,42 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
 
   // ── Mobile drawer ───────────────────────────────────────────────────────────
 
+  const lockBodyScroll = () => {
+    lockedScrollY = window.scrollY;
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${lockedScrollY}px`;
+    document.body.style.left = "0";
+    document.body.style.right = "0";
+    document.body.style.width = "100%";
+    document.body.style.overflow = "hidden";
+  };
+
+  const unlockBodyScroll = () => {
+    document.body.style.position = "";
+    document.body.style.top = "";
+    document.body.style.left = "";
+    document.body.style.right = "";
+    document.body.style.width = "";
+    document.body.style.overflow = "";
+    window.scrollTo(0, lockedScrollY);
+  };
+
   /** Opens or closes the full-screen mobile menu. */
   const setDrawerOpen = (open: boolean) => {
     if (!toggle || !drawer || !navbar) return;
 
     toggle.setAttribute("aria-expanded", String(open));
     navbar.classList.toggle("navbar--open", open);
-    document.body.style.overflow = open ? "hidden" : "";
 
     if (open) {
       document.body.classList.add("menu-open");
+      lockBodyScroll();
       drawer.classList.remove("navbar__drawer--closing");
       drawer.removeAttribute("hidden");
-      // Double rAF ensures the browser paints the closed state before animating open.
+      // Force layout so mobile Safari paints the closed state before transitioning.
+      void drawer.offsetHeight;
       requestAnimationFrame(() => {
-        requestAnimationFrame(() => drawer.classList.add("is-visible"));
+        drawer.classList.add("is-visible");
       });
       return;
     }
@@ -252,6 +276,7 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
     drawer.classList.add("navbar__drawer--closing");
     drawer.classList.remove("is-visible");
     document.body.classList.remove("menu-open");
+    unlockBodyScroll();
 
     const hideDrawer = () => {
       if (!drawer.classList.contains("is-visible")) {
@@ -850,6 +875,10 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
 
   /* ── Mobile drawer (full-screen) ─────────────────────────────────────────── */
 
+  .navbar__drawer[hidden] {
+    display: none !important;
+  }
+
   .navbar__drawer {
     position: fixed;
     inset: 0;
@@ -875,6 +904,8 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
     opacity: 1;
     transform: translate3d(0, 1rem, 0);
     overflow: hidden;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
     will-change: transform;
     transition: transform 0.28s var(--nav-ease);
   }
@@ -919,6 +950,10 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
       inset 0 1px 0 rgba(255, 255, 255, 0.1);
     opacity: 0;
     transform: scale(0.85) rotate(-90deg);
+  }
+
+  .navbar__drawer.is-visible .navbar__drawer-close,
+  .navbar__drawer--closing .navbar__drawer-close {
     transition:
       opacity 0.35s var(--nav-ease),
       transform 0.4s var(--nav-ease),
@@ -1082,6 +1117,10 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
     margin-bottom: 2rem;
     opacity: 0;
     transform: translate3d(0, 12px, 0);
+  }
+
+  .navbar__drawer.is-visible .navbar__drawer-header,
+  .navbar__drawer--closing .navbar__drawer-header {
     transition:
       opacity 0.4s var(--nav-ease),
       transform 0.4s var(--nav-ease);
@@ -1176,6 +1215,9 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
     flex-direction: column;
     justify-content: center;
     gap: 0;
+    /* Stable height avoids link stack jumping when the mobile viewport resizes */
+    min-height: 0;
+    contain: layout style;
   }
 
   .navbar__drawer-divider {
@@ -1190,6 +1232,10 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
     opacity: 0;
     transform: scaleX(0);
     transform-origin: left;
+  }
+
+  .navbar__drawer.is-visible .navbar__drawer-divider,
+  .navbar__drawer--closing .navbar__drawer-divider {
     transition:
       opacity 0.4s var(--nav-ease),
       transform 0.5s var(--nav-ease);
@@ -1331,6 +1377,10 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
     border: 1px solid transparent;
     opacity: 0;
     transform: translate3d(-20px, 0, 0);
+  }
+
+  .navbar__drawer.is-visible .navbar__drawer-link,
+  .navbar__drawer--closing .navbar__drawer-link {
     transition:
       color 0.25s ease,
       border-color 0.25s ease,
@@ -1363,6 +1413,10 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
     padding-top: 1.5rem;
     opacity: 0;
     transform: translate3d(0, 16px, 0);
+  }
+
+  .navbar__drawer.is-visible .navbar__drawer-footer,
+  .navbar__drawer--closing .navbar__drawer-footer {
     transition:
       opacity 0.4s var(--nav-ease),
       transform 0.4s var(--nav-ease);
