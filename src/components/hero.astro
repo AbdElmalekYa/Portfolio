@@ -18,9 +18,9 @@ const {
   <div class="hero-singularity" aria-hidden="true" data-hero-parallax>
     <div class="singularity-core"></div>
     <div class="singularity-glow"></div>
-    <div class="orbit orbit--1"><span class="orbit-dot"></span></div>
-    <div class="orbit orbit--2"><span class="orbit-dot"></span></div>
-    <div class="orbit orbit--3"><span class="orbit-dot"></span></div>
+    <div class="orbit orbit--1"></div>
+    <div class="orbit orbit--2"></div>
+    <div class="orbit orbit--3"></div>
   </div>
 
 	<div class="hero-grid">
@@ -196,6 +196,7 @@ const {
     transform: translateY(-50%) translate(var(--parallax-x), var(--parallax-y));
     pointer-events: none;
     z-index: 0;
+    overflow: hidden;
     will-change: transform;
   }
 
@@ -260,26 +261,6 @@ const {
     animation: orbit-spin 14s linear infinite;
   }
 
-  .orbit-dot {
-    position: absolute;
-    top: -3px;
-    left: 50%;
-    width: 6px;
-    height: 6px;
-    margin-left: -3px;
-    border-radius: 50%;
-    background: var(--hero-accent-bright);
-    box-shadow: 0 0 12px var(--hero-accent);
-  }
-
-  .orbit--2 .orbit-dot {
-    width: 4px;
-    height: 4px;
-    margin-left: -2px;
-    top: -2px;
-    opacity: 0.7;
-  }
-
 	/* ── Badge ── */
 	.hero-badge {
 		display: inline-flex;
@@ -292,11 +273,11 @@ const {
 		letter-spacing: 0.14em;
 		text-transform: uppercase;
 		color: var(--hero-accent);
-		background: var(--hero-glass);
+		background:
+			linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, transparent 40%),
+			linear-gradient(135deg, rgba(20, 22, 40, 0.92) 0%, rgba(10, 12, 24, 0.96) 100%);
 		border: 1px solid var(--hero-glass-border);
 		border-radius: 999px;
-		backdrop-filter: blur(12px) saturate(140%);
-		-webkit-backdrop-filter: blur(12px) saturate(140%);
 		box-shadow:
 			inset 0 1px 0 rgba(255, 255, 255, 0.12),
 			0 8px 32px rgba(0, 0, 0, 0.2);
@@ -341,6 +322,7 @@ const {
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    -webkit-text-fill-color: transparent;
     animation: shimmer 6s ease-in-out infinite;
   }
 
@@ -474,10 +456,11 @@ const {
     padding: 0.85rem 1.75rem;
     border-radius: 999px;
     color: var(--hero-text);
-    background: var(--hero-glass);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.07) 0%, transparent 38%),
+      linear-gradient(135deg, rgba(18, 20, 38, 0.94) 0%, rgba(8, 10, 22, 0.97) 100%);
     border: 1px solid var(--hero-glass-border);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
     transition:
       background 0.35s ease,
       border-color 0.35s ease,
@@ -485,9 +468,13 @@ const {
   }
 
   .hero-cta--ghost:hover .hero-cta-inner {
-    background: rgba(255, 255, 255, 0.1);
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, 0.1) 0%, transparent 40%),
+      linear-gradient(135deg, rgba(26, 28, 48, 0.96) 0%, rgba(14, 16, 30, 0.98) 100%);
     border-color: rgba(200, 176, 255, 0.35);
-    box-shadow: 0 0 24px rgba(200, 176, 255, 0.12);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.12),
+      0 0 24px rgba(200, 176, 255, 0.12);
   }
 
 	/* ── Reveal animation ── */

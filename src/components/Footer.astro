@@ -76,7 +76,7 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 	</div>
 
 	<div class="container footer__inner">
-		<div class="footer__cta-panel fade-bottom" style="animation-delay: 0.05s">
+		<div class="footer__cta-panel glass-panel fade-bottom" style="animation-delay: 0.05s">
 			<div class="footer__cta-glow" aria-hidden="true"></div>
 			<div class="footer__cta-content">
 				<p class="eyebrow footer__cta-eyebrow">Ready for liftoff?</p>
@@ -503,10 +503,7 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 		gap: var(--space-md) var(--space-lg);
 		padding: clamp(1.75rem, 4vw, 2.5rem) clamp(1.5rem, 4vw, 2.75rem);
 		border-radius: 1.5rem;
-		background: var(--color-glass);
 		border: 1px solid var(--color-glass-border);
-		backdrop-filter: blur(20px) saturate(150%);
-		-webkit-backdrop-filter: blur(20px) saturate(150%);
 		box-shadow:
 			inset 0 1px 0 rgba(255, 255, 255, 0.1),
 			0 24px 64px rgba(0, 0, 0, 0.35);
@@ -707,8 +704,9 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 		border-radius: 0.85rem;
 		color: var(--color-text-muted);
 		text-decoration: none;
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--glass-card-fill);
 		border: 1px solid var(--color-glass-border);
+		box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
 		overflow: hidden;
 		transition:
 			color 0.3s ease,
@@ -861,6 +859,15 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 		box-shadow: 0 12px 32px rgba(100, 64, 180, 0.25);
 	}
 
+	.footer__social-link--facebook:hover,
+	.footer__social-link--facebook:focus-visible {
+		background:
+			linear-gradient(180deg, rgba(77, 159, 255, 0.14) 0%, transparent 42%),
+			linear-gradient(135deg, rgba(10, 24, 52, 0.96) 0%, rgba(6, 14, 34, 0.98) 100%);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.1),
+			0 12px 32px rgba(24, 119, 242, 0.2);
+	}
 	.footer__social-link--facebook:hover .footer__channel-icon,
 	.footer__social-link--facebook:focus-visible .footer__channel-icon {
 		color: #4d9fff;
@@ -876,13 +883,12 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 
 	.footer__social-link--instagram:hover,
 	.footer__social-link--instagram:focus-visible {
-		background: linear-gradient(
-			135deg,
-			rgba(225, 48, 108, 0.1) 0%,
-			rgba(131, 58, 180, 0.1) 50%,
-			rgba(247, 119, 55, 0.08) 100%
-		);
-		box-shadow: 0 12px 32px rgba(225, 48, 108, 0.18);
+		background:
+			linear-gradient(180deg, rgba(247, 119, 55, 0.12) 0%, transparent 42%),
+			linear-gradient(135deg, rgba(42, 14, 36, 0.96) 0%, rgba(20, 8, 28, 0.98) 100%);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.1),
+			0 12px 32px rgba(225, 48, 108, 0.18);
 	}
 
 	.footer__social-link--instagram:hover .footer__channel-icon,
