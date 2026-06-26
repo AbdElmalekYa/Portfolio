@@ -44,7 +44,17 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
         <li class="navbar__indicator" aria-hidden="true" data-nav-indicator></li>
       </ul>
 
-      <a href="#contact" class="navbar__cta">Let's talk</a>
+      <a href="#contact" class="cta-btn navbar__cta">
+        <span>Let's talk</span>
+        <svg class="cta-btn__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M5 12h14M13 6l6 6-6 6"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"></path>
+        </svg>
+      </a>
 
       <button
         type="button"
@@ -126,9 +136,16 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
       </ul>
 
       <footer class="navbar__drawer-footer">
-        <a href="#contact" class="navbar__drawer-cta">
-          <span class="navbar__drawer-cta-shine" aria-hidden="true"></span>
+        <a href="#contact" class="cta-btn navbar__drawer-cta">
           <span>Let's talk</span>
+          <svg class="cta-btn__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path
+              d="M5 12h14M13 6l6 6-6 6"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
+          </svg>
         </a>
         <p class="navbar__drawer-tagline">Open to new galaxies</p>
       </footer>
@@ -184,7 +201,7 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
     moveIndicator(activeHash);
   };
 
-  /** Positions the sliding pill behind the active desktop link. Skipped on mobile. */
+  /** Positions the glass pill behind the active desktop link. */
   const moveIndicator = (hash: string) => {
     if (!indicator || !desktopLinks?.length) return;
     if (window.innerWidth <= MOBILE_BREAKPOINT) return;
@@ -201,6 +218,7 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
     const linkRect = active.getBoundingClientRect();
 
     indicator.style.width = `${linkRect.width}px`;
+    indicator.style.height = `${linkRect.height}px`;
     indicator.style.transform = `translateX(${linkRect.left - listRect.left}px)`;
     indicator.style.opacity = "1";
   };
@@ -531,113 +549,19 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
     padding: 0;
   }
 
-  .navbar__link {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    align-items: center;
-    gap: 0.45rem;
-    padding: 0.5rem 1.1rem;
-    text-decoration: none;
-    color: var(--nav-muted);
-    font-size: 0.875rem;
-    font-weight: 450;
-    letter-spacing: 0.02em;
-    border-radius: 999px;
-    transition: color 0.25s ease;
-  }
-
-  .navbar__link:not(.is-active):is(:hover, :focus-visible) {
-    z-index: 2;
-  }
-
-  .navbar__link:hover {
-    color: var(--nav-text);
-  }
-
-  .navbar__link.is-active {
-    color: var(--nav-text);
-  }
-
-  /* Hover glow — desktop only (touch devices rarely trigger :hover) */
-  .navbar__link-glow {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 145%;
-    height: 210%;
-    transform: translate(-50%, -50%);
-    pointer-events: none;
-    z-index: 0;
-    overflow: visible;
-  }
-
-  .navbar__link-glow::before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    width: 58%;
-    height: 75%;
-    border-radius: 50%;
-    transform: translate(-50%, -50%) scale(0.5);
-    background: radial-gradient(
-      ellipse 48% 42% at center,
-      rgba(215, 175, 255, 0.95) 0%,
-      rgba(190, 135, 255, 0.62) 19%,
-      rgba(170, 110, 245, 0.3) 38%,
-      rgba(150, 90, 230, 0.08) 52%,
-      transparent 65%
-    );
-    opacity: 0;
-    filter: blur(14px);
-    transition:
-      opacity 0.35s ease,
-      transform 0.5s var(--nav-ease),
-      filter 0.5s ease;
-  }
-
-  .navbar__link:not(.is-active):is(:hover, :focus-visible) .navbar__link-glow::before {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1.35);
-    filter: blur(24px);
-  }
-
-  .navbar__link:not(.is-active):is(:hover, :focus-visible) .navbar__link-text {
-    text-shadow:
-      0 0 11px rgba(200, 160, 255, 0.72),
-      0 0 20px rgba(170, 120, 255, 0.4);
-  }
-
-  .navbar__link-text,
+  /* Drawer-only: shared active label + trail with desktop nav links (styles in global.css) */
   .navbar__drawer-label {
     position: relative;
     z-index: 1;
   }
 
-  /* Shared active label style for desktop and mobile */
-  :is(.navbar__link, .navbar__drawer-link).is-active :is(.navbar__link-text, .navbar__drawer-label) {
+  .navbar__drawer-link.is-active .navbar__drawer-label {
     font-weight: 500;
     letter-spacing: 0.03em;
     background: linear-gradient(135deg, rgba(248, 250, 255, 0.98) 25%, #c4a8f5 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
-  }
-
-  /* Comet trail — shared by desktop and mobile active links */
-  .navbar__link-trail {
-    position: absolute;
-    z-index: 1;
-    bottom: 0.22rem;
-    left: 14%;
-    right: 14%;
-    height: 1.5px;
-    border-radius: 2px;
-    opacity: 0;
-    pointer-events: none;
-    overflow: hidden;
-    transition: opacity 0.4s var(--nav-ease);
   }
 
   .navbar__link-trail--drawer {
@@ -647,167 +571,15 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
     right: 3rem;
   }
 
-  :is(.navbar__link, .navbar__drawer-link).is-active .navbar__link-trail {
+  .navbar__drawer-link.is-active .navbar__link-trail {
     opacity: 1;
   }
 
-  .navbar__link-trail::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(170, 130, 240, 0.28) 22%,
-      rgba(195, 165, 255, 0.45) 50%,
-      rgba(170, 130, 240, 0.28) 78%,
-      transparent 100%
-    );
-  }
-
-  .navbar__link-trail::after {
-    content: "";
-    position: absolute;
-    top: -2px;
-    left: -35%;
-    width: 35%;
-    height: 5px;
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      rgba(210, 185, 255, 0.55) 45%,
-      rgba(230, 215, 255, 0.35) 55%,
-      transparent 100%
-    );
-    filter: blur(2px);
-    animation: comet-run 3.2s ease-in-out infinite;
-  }
-
-  @keyframes comet-run {
-    0% {
-      left: -35%;
-      opacity: 0;
-    }
-
-    12% {
-      opacity: 1;
-    }
-
-    88% {
-      opacity: 1;
-    }
-
-    100% {
-      left: 100%;
-      opacity: 0;
-    }
-  }
-
-  /* Sliding pill behind the active desktop link */
-  .navbar__indicator {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    border-radius: 999px;
-    background: linear-gradient(
-      135deg,
-      rgba(175, 135, 245, 0.14) 0%,
-      rgba(200, 176, 255, 0.07) 45%,
-      rgba(155, 105, 230, 0.11) 100%
-    );
-    border: 1px solid rgba(200, 176, 255, 0.16);
-    box-shadow:
-      0 0 18px rgba(150, 100, 220, 0.1),
-      inset 0 1px 0 rgba(255, 255, 255, 0.08);
-    opacity: 0;
-    pointer-events: none;
-    overflow: hidden;
-    transition:
-      transform 0.4s var(--nav-ease),
-      width 0.4s var(--nav-ease),
-      opacity 0.3s ease;
-    will-change: transform, width;
-  }
-
-  .navbar__indicator::before {
-    content: "";
-    position: absolute;
-    inset: -80%;
-    background: conic-gradient(
-      from 0deg,
-      transparent 0deg,
-      rgba(195, 165, 255, 0.12) 70deg,
-      transparent 140deg,
-      rgba(175, 135, 245, 0.08) 220deg,
-      transparent 300deg
-    );
-    animation: indicator-aurora 7s linear infinite;
-  }
-
-  .navbar__indicator::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    background: linear-gradient(
-      105deg,
-      transparent 42%,
-      rgba(255, 255, 255, 0.07) 50%,
-      transparent 58%
-    );
-    animation: indicator-shimmer 5s ease-in-out infinite;
-  }
-
-  @keyframes indicator-aurora {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  @keyframes indicator-shimmer {
-    0%,
-    70%,
-    100% {
-      transform: translateX(-120%);
-      opacity: 0;
-    }
-
-    82% {
-      opacity: 1;
-    }
-
-    90% {
-      transform: translateX(120%);
-    }
-  }
-
-  /* CTA */
+  /* CTA — layout only; shared look in global .cta-btn */
   .navbar__cta {
     position: relative;
     z-index: 1;
     flex-shrink: 0;
-    padding: 0.5rem 1.25rem;
-    border-radius: 999px;
-    text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: 500;
-    letter-spacing: 0.03em;
-    color: #0a0c18;
-    background: linear-gradient(135deg, var(--nav-accent-bright) 0%, var(--nav-accent) 100%);
-    box-shadow:
-      0 2px 16px rgba(160, 110, 240, 0.35),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4);
-    transition:
-      transform 0.2s ease,
-      box-shadow 0.2s ease;
-  }
-
-  .navbar__cta:hover {
-    transform: translateY(-1px);
-    box-shadow:
-      0 4px 24px rgba(160, 110, 240, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.5);
   }
 
   /* Hamburger */
@@ -1016,7 +788,6 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
   }
 
   .navbar__drawer:not(.is-visible) .navbar__drawer-cosmos *,
-  .navbar__drawer:not(.is-visible) .navbar__drawer-cta-shine,
   .navbar__drawer:not(.is-visible) .navbar__active-bar::after {
     animation-play-state: paused;
   }
@@ -1411,6 +1182,7 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
     z-index: 1;
     margin-top: auto;
     padding-top: 1.5rem;
+    text-align: center;
     opacity: 0;
     transform: translate3d(0, 16px, 0);
   }
@@ -1426,49 +1198,6 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
   .navbar__drawer.is-visible .navbar__drawer-footer {
     opacity: 1;
     transform: translate3d(0, 0, 0);
-  }
-
-  .navbar__drawer-cta {
-    position: relative;
-    display: block;
-    overflow: hidden;
-    text-align: center;
-    padding: 1rem;
-    border-radius: 999px;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 1rem;
-    letter-spacing: 0.03em;
-    color: #0a0c18;
-    background: linear-gradient(135deg, var(--nav-accent-bright) 0%, var(--nav-accent) 100%);
-    box-shadow:
-      0 4px 24px rgba(160, 110, 240, 0.35),
-      inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  }
-
-  .navbar__drawer-cta-shine {
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(
-      105deg,
-      transparent 40%,
-      rgba(255, 255, 255, 0.35) 50%,
-      transparent 60%
-    );
-    transform: translateX(-120%);
-    animation: cta-shine 4s ease-in-out infinite;
-  }
-
-  @keyframes cta-shine {
-    0%,
-    65%,
-    100% {
-      transform: translateX(-120%);
-    }
-
-    80% {
-      transform: translateX(120%);
-    }
   }
 
   .navbar__drawer-tagline {
@@ -1508,7 +1237,6 @@ const drawerStars = Array.from({ length: 6 }, (_, i) => ({
     .navbar__drawer-aurora,
     .navbar__drawer-orbit,
     .navbar__drawer-star,
-    .navbar__drawer-cta-shine,
     .navbar__drawer-panel,
     .navbar__drawer-close,
     .navbar__drawer-header,

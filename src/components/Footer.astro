@@ -1,0 +1,986 @@
+---
+interface Props {
+	facebookUrl?: string;
+	instagramUrl?: string;
+	email?: string;
+	phone?: string;
+}
+
+const {
+	facebookUrl = 'https://facebook.com',
+	instagramUrl = 'https://instagram.com',
+	email = 'hello@portfolio.dev',
+	phone = '+963956667367',
+} = Astro.props;
+
+const phoneHref = `tel:${phone.replace(/\s/g, '')}`;
+const phoneDisplay = phone.replace(/^(\+\d{3})(\d{3})(\d{3})(\d{3})$/, '$1 $2 $3 $4');
+
+const navLinks = [
+	{ href: '#home', label: 'Home' },
+	{ href: '#work', label: 'Work' },
+	{ href: '#about', label: 'About' },
+	{ href: '#contact', label: 'Contact' },
+];
+
+const year = new Date().getFullYear();
+
+/** Decorative micro-stars scattered across the footer cosmos layer */
+const footerStars = Array.from({ length: 14 }, (_, i) => ({
+	x: `${4 + ((i * 19.7) % 92)}%`,
+	y: `${6 + ((i * 11.3) % 88)}%`,
+	size: i % 5 === 0 ? 2.5 : i % 3 === 0 ? 1.5 : 1,
+	delay: `${((i * 0.41) % 3.2).toFixed(2)}s`,
+	duration: `${(2.4 + (i % 6) * 0.55).toFixed(1)}s`,
+	opacity: 0.35 + (i % 4) * 0.15,
+}));
+---
+
+<footer class="footer" id="contact" data-footer>
+	<div class="footer__aurora" aria-hidden="true">
+		<span class="footer__aurora-band footer__aurora-band--1"></span>
+		<span class="footer__aurora-band footer__aurora-band--2"></span>
+		<span class="footer__aurora-band footer__aurora-band--3"></span>
+	</div>
+
+	<div class="footer__beam" aria-hidden="true">
+		<span class="footer__beam-line"></span>
+		<span class="footer__beam-glow"></span>
+	</div>
+
+	<div class="footer__cosmos" aria-hidden="true">
+		<span class="footer__orbit-ring"></span>
+		<span class="footer__orbit-dot"></span>
+		{
+			footerStars.map((star) => (
+				<span
+					class="footer__star"
+					style={`left:${star.x};top:${star.y};--size:${star.size}px;--delay:${star.delay};--duration:${star.duration};--opacity:${star.opacity}`}
+				/>
+			))
+		}
+		<svg class="footer__constellation" viewBox="0 0 320 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+			<path
+				class="footer__constellation-path"
+				d="M20 80 L60 40 L100 70 L140 30 L180 55 L220 20 L260 50 L300 35"
+				stroke="currentColor"
+				stroke-width="0.75"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			/>
+			<circle class="footer__constellation-node" cx="60" cy="40" r="2.5" />
+			<circle class="footer__constellation-node" cx="140" cy="30" r="2" />
+			<circle class="footer__constellation-node" cx="220" cy="20" r="2.5" />
+			<circle class="footer__constellation-node" cx="300" cy="35" r="2" />
+		</svg>
+	</div>
+
+	<div class="container footer__inner">
+		<div class="footer__cta-panel fade-bottom" style="animation-delay: 0.05s">
+			<div class="footer__cta-glow" aria-hidden="true"></div>
+			<div class="footer__cta-content">
+				<p class="eyebrow footer__cta-eyebrow">Ready for liftoff?</p>
+				<h2 class="footer__cta-title">
+					Let's build something <span class="gradient-text">cosmic</span>
+				</h2>
+				<p class="body-regular footer__cta-desc">
+					Open to collaborations, freelance missions, and bold ideas across the digital universe.
+				</p>
+			</div>
+			<a href={`mailto:${email}`} class="cta-btn">
+				<span>Start a conversation</span>
+				<svg class="cta-btn__arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+					<path
+						d="M5 12h14M13 6l6 6-6 6"
+						stroke="currentColor"
+						stroke-width="1.5"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					/>
+				</svg>
+			</a>
+		</div>
+
+		<hr class="divider footer__divider fade-in" style="animation-delay: 0.12s" />
+
+		<div class="footer__grid">
+			<div class="footer__brand fade-left" style="animation-delay: 0.15s">
+				<a href="#home" class="footer__brand-link">
+					<span class="footer__brand-orbit" aria-hidden="true">
+						<span class="footer__brand-core"></span>
+						<span class="footer__brand-ring"></span>
+					</span>
+					<span class="footer__brand-text">Portfolio</span>
+				</a>
+				<p class="footer__brand-tagline">
+					Full-stack developer & creative technologist crafting immersive digital experiences.
+				</p>
+				<p class="tagline footer__status">
+					<span class="footer__status-dot" aria-hidden="true"></span>
+					Available for new projects
+				</p>
+			</div>
+
+			<nav class="footer__nav fade-bottom" style="animation-delay: 0.2s" aria-label="Footer navigation">
+				<p class="caption footer__col-label">Navigate</p>
+				<ul class="navbar__links footer__nav-links" role="list">
+					{
+						navLinks.map((link) => (
+							<li>
+								<a href={link.href} class="navbar__link" data-nav-link>
+									<span class="navbar__link-pill" aria-hidden="true"></span>
+									<span class="navbar__link-glow" aria-hidden="true"></span>
+									<span class="navbar__link-trail" aria-hidden="true"></span>
+									<span class="navbar__link-text">{link.label}</span>
+								</a>
+							</li>
+						))
+					}
+				</ul>
+			</nav>
+
+			<div class="footer__social fade-bottom" style="animation-delay: 0.28s">
+				<p class="caption footer__col-label">Connect</p>
+				<ul class="footer__social-list" role="list">
+					<li>
+						<a
+							href={facebookUrl}
+							class="footer__channel-link footer__social-link footer__social-link--facebook"
+							target="_blank"
+							rel="noopener noreferrer"
+							aria-label="Follow on Facebook"
+						>
+							<span class="footer__channel-border footer__social-border" aria-hidden="true"></span>
+							<span class="footer__channel-shine footer__social-shine" aria-hidden="true"></span>
+							<span class="footer__channel-icon" aria-hidden="true">
+								<svg viewBox="0 0 24 24" fill="currentColor">
+									<path
+										d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
+									/>
+								</svg>
+							</span>
+							<span class="footer__channel-text">
+								<span class="footer__channel-label">Facebook</span>
+								<span class="footer__channel-value">Follow us</span>
+							</span>
+						</a>
+					</li>
+					<li>
+						<a
+							href={instagramUrl}
+							class="footer__channel-link footer__social-link footer__social-link--instagram"
+							target="_blank"
+							rel="noopener noreferrer"
+							aria-label="Follow on Instagram"
+						>
+							<span class="footer__channel-border footer__social-border" aria-hidden="true"></span>
+							<span class="footer__channel-shine footer__social-shine" aria-hidden="true"></span>
+							<span class="footer__channel-icon" aria-hidden="true">
+								<svg viewBox="0 0 24 24" fill="currentColor">
+									<path
+										d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"
+									/>
+								</svg>
+							</span>
+							<span class="footer__channel-text">
+								<span class="footer__channel-label">Instagram</span>
+								<span class="footer__channel-value">Follow us</span>
+							</span>
+						</a>
+					</li>
+				</ul>
+			</div>
+
+			<div class="footer__contact fade-right" style="animation-delay: 0.35s">
+				<p class="caption footer__col-label">Signal</p>
+				<ul class="footer__signal-list" role="list">
+					<li>
+						<a href={`mailto:${email}`} class="footer__channel-link footer__channel-link--email">
+							<span class="footer__channel-border" aria-hidden="true"></span>
+							<span class="footer__channel-shine" aria-hidden="true"></span>
+							<span class="footer__channel-icon" aria-hidden="true">
+								<svg viewBox="0 0 24 24" fill="none">
+									<rect x="2" y="4" width="20" height="16" rx="3" stroke="currentColor" stroke-width="1.5" />
+									<path d="M2 7l10 7 10-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+								</svg>
+							</span>
+							<span class="footer__channel-text">
+								<span class="footer__channel-label">Email</span>
+								<span class="footer__channel-value">{email}</span>
+							</span>
+						</a>
+					</li>
+					<li>
+						<a href={phoneHref} class="footer__channel-link footer__channel-link--phone">
+							<span class="footer__channel-border" aria-hidden="true"></span>
+							<span class="footer__channel-shine" aria-hidden="true"></span>
+							<span class="footer__channel-icon" aria-hidden="true">
+								<svg viewBox="0 0 24 24" fill="none">
+									<path
+										d="M8.5 3.5h7A2.5 2.5 0 0118 6v12a2.5 2.5 0 01-2.5 2.5h-7A2.5 2.5 0 016 18V6a2.5 2.5 0 012.5-2.5z"
+										stroke="currentColor"
+										stroke-width="1.5"
+									/>
+									<path d="M11 17.5h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+								</svg>
+							</span>
+							<span class="footer__channel-text">
+								<span class="footer__channel-label">Phone</span>
+								<span class="footer__channel-value">{phoneDisplay}</span>
+							</span>
+						</a>
+					</li>
+				</ul>
+				<p class="legal-text footer__timezone">Earth · UTC+0</p>
+			</div>
+		</div>
+
+		<div class="footer__bar fade-in" style="animation-delay: 0.42s">
+			<p class="legal-text footer__copyright">
+				© {year} Portfolio. Crafted among the stars.
+			</p>
+		</div>
+	</div>
+</footer>
+
+<style>
+	.footer {
+		--footer-ease: var(--ease-out);
+		position: relative;
+		z-index: 5;
+		margin-top: var(--space-2xl);
+		padding: var(--space-2xl) 0 var(--space-lg);
+		overflow: hidden;
+		isolation: isolate;
+	}
+
+	/* ── Aurora backdrop ── */
+	.footer__aurora {
+		position: absolute;
+		inset: 0 0 auto;
+		height: 280px;
+		pointer-events: none;
+		overflow: hidden;
+		mask-image: linear-gradient(180deg, black 0%, transparent 100%);
+		-webkit-mask-image: linear-gradient(180deg, black 0%, transparent 100%);
+	}
+
+	.footer__aurora-band {
+		position: absolute;
+		width: 140%;
+		height: 120px;
+		left: -20%;
+		border-radius: 50%;
+		filter: blur(48px);
+		opacity: 0.45;
+	}
+
+	.footer__aurora-band--1 {
+		top: -40px;
+		background: radial-gradient(ellipse, rgba(140, 80, 220, 0.55) 0%, transparent 70%);
+		animation: footer-aurora-drift 14s ease-in-out infinite;
+	}
+
+	.footer__aurora-band--2 {
+		top: 20px;
+		left: -10%;
+		background: radial-gradient(ellipse, rgba(100, 64, 180, 0.4) 0%, transparent 65%);
+		animation: footer-aurora-drift 18s ease-in-out infinite reverse;
+	}
+
+	.footer__aurora-band--3 {
+		top: 60px;
+		left: 30%;
+		background: radial-gradient(ellipse, rgba(200, 176, 255, 0.25) 0%, transparent 60%);
+		animation: footer-aurora-drift 22s ease-in-out infinite;
+		animation-delay: -6s;
+	}
+
+	@keyframes footer-aurora-drift {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0) scale(1);
+		}
+		50% {
+			transform: translate3d(4%, 8px, 0) scale(1.06);
+		}
+	}
+
+	/* ── Animated top beam ── */
+	.footer__beam {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 2px;
+		overflow: hidden;
+	}
+
+	.footer__beam-line {
+		display: block;
+		width: 100%;
+		height: 1px;
+		background: linear-gradient(
+			90deg,
+			transparent 0%,
+			var(--color-glass-border) 20%,
+			var(--color-accent) 50%,
+			var(--color-glass-border) 80%,
+			transparent 100%
+		);
+		opacity: 0.6;
+	}
+
+	.footer__beam-glow {
+		position: absolute;
+		top: -1px;
+		left: 0;
+		width: 120px;
+		height: 3px;
+		background: linear-gradient(
+			90deg,
+			transparent,
+			var(--color-accent-bright),
+			var(--color-accent),
+			transparent
+		);
+		filter: blur(2px);
+		box-shadow: 0 0 20px var(--color-accent-glow);
+		animation: footer-beam-sweep 5s var(--footer-ease) infinite;
+	}
+
+	@keyframes footer-beam-sweep {
+		0% {
+			left: -10%;
+			opacity: 0;
+		}
+		10% {
+			opacity: 1;
+		}
+		90% {
+			opacity: 1;
+		}
+		100% {
+			left: 110%;
+			opacity: 0;
+		}
+	}
+
+	/* ── Cosmos decoration layer ── */
+	.footer__cosmos {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		overflow: hidden;
+	}
+
+	.footer__orbit-ring {
+		position: absolute;
+		top: 12%;
+		right: -8%;
+		width: clamp(180px, 28vw, 340px);
+		height: clamp(180px, 28vw, 340px);
+		border-radius: 50%;
+		border: 1px solid rgba(200, 176, 255, 0.12);
+		transform: rotateX(68deg);
+		animation: footer-orbit-spin 32s linear infinite;
+	}
+
+	.footer__orbit-dot {
+		position: absolute;
+		top: 14%;
+		right: calc(8% + clamp(90px, 14vw, 170px));
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: var(--color-accent-bright);
+		box-shadow: 0 0 14px var(--color-accent);
+		animation: footer-orbit-dot 32s linear infinite;
+		transform-origin: clamp(90px, 14vw, 170px) 0;
+	}
+
+	@keyframes footer-orbit-spin {
+		to {
+			transform: rotateX(68deg) rotateZ(360deg);
+		}
+	}
+
+	@keyframes footer-orbit-dot {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.footer__star {
+		position: absolute;
+		width: var(--size);
+		height: var(--size);
+		border-radius: 50%;
+		background: var(--color-accent-bright);
+		opacity: var(--opacity);
+		box-shadow: 0 0 6px rgba(200, 176, 255, 0.5);
+		animation: footer-star-twinkle var(--duration) ease-in-out infinite;
+		animation-delay: var(--delay);
+	}
+
+	@keyframes footer-star-twinkle {
+		0%,
+		100% {
+			opacity: calc(var(--opacity) * 0.5);
+			transform: scale(1);
+		}
+		50% {
+			opacity: var(--opacity);
+			transform: scale(1.4);
+		}
+	}
+
+	.footer__constellation {
+		position: absolute;
+		bottom: 18%;
+		right: 4%;
+		width: min(320px, 40vw);
+		color: rgba(200, 176, 255, 0.2);
+		opacity: 0.7;
+	}
+
+	.footer__constellation-path {
+		stroke-dasharray: 400;
+		stroke-dashoffset: 400;
+		animation: footer-draw-line 4s var(--footer-ease) forwards;
+		animation-delay: 0.6s;
+	}
+
+	.footer__constellation-node {
+		fill: var(--color-accent);
+		opacity: 0;
+		animation: footer-node-pop 0.5s var(--footer-ease) forwards;
+	}
+
+	.footer__constellation-node:nth-child(2) {
+		animation-delay: 1.2s;
+	}
+	.footer__constellation-node:nth-child(3) {
+		animation-delay: 1.5s;
+	}
+	.footer__constellation-node:nth-child(4) {
+		animation-delay: 1.8s;
+	}
+	.footer__constellation-node:nth-child(5) {
+		animation-delay: 2.1s;
+	}
+
+	@keyframes footer-draw-line {
+		to {
+			stroke-dashoffset: 0;
+		}
+	}
+
+	@keyframes footer-node-pop {
+		from {
+			opacity: 0;
+			transform: scale(0);
+		}
+		to {
+			opacity: 0.85;
+			transform: scale(1);
+		}
+	}
+
+	/* ── Inner layout ── */
+	.footer__inner {
+		position: relative;
+		z-index: 1;
+	}
+
+	/* ── CTA panel ── */
+	.footer__cta-panel {
+		position: relative;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		gap: var(--space-md) var(--space-lg);
+		padding: clamp(1.75rem, 4vw, 2.5rem) clamp(1.5rem, 4vw, 2.75rem);
+		border-radius: 1.5rem;
+		background: var(--color-glass);
+		border: 1px solid var(--color-glass-border);
+		backdrop-filter: blur(20px) saturate(150%);
+		-webkit-backdrop-filter: blur(20px) saturate(150%);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.1),
+			0 24px 64px rgba(0, 0, 0, 0.35);
+		overflow: hidden;
+	}
+
+	.footer__cta-glow {
+		position: absolute;
+		top: -50%;
+		left: -20%;
+		width: 60%;
+		height: 200%;
+		background: radial-gradient(ellipse, rgba(200, 176, 255, 0.12) 0%, transparent 65%);
+		pointer-events: none;
+		animation: footer-cta-glow 8s ease-in-out infinite;
+	}
+
+	@keyframes footer-cta-glow {
+		0%,
+		100% {
+			transform: translate3d(0, 0, 0);
+			opacity: 0.6;
+		}
+		50% {
+			transform: translate3d(15%, 0, 0);
+			opacity: 1;
+		}
+	}
+
+	.footer__cta-content {
+		position: relative;
+		flex: 1 1 280px;
+		max-width: 36rem;
+	}
+
+	.footer__cta-eyebrow {
+		margin-bottom: var(--space-xs);
+	}
+
+	.footer__cta-title {
+		font-size: clamp(1.5rem, 3.5vw, 2.25rem);
+		font-weight: 300;
+		line-height: 1.2;
+		margin-bottom: var(--space-sm);
+	}
+
+	.footer__cta-desc {
+		max-width: 32rem;
+	}
+
+	.footer__divider {
+		margin: var(--space-xl) 0;
+	}
+
+	/* ── Grid columns ── */
+	.footer__grid {
+		display: grid;
+		grid-template-columns: 1.4fr repeat(3, 1fr);
+		gap: var(--space-lg) var(--space-md);
+	}
+
+	.footer__col-label {
+		margin-bottom: var(--space-sm);
+		color: var(--color-text-subtle);
+	}
+
+	/* ── Brand (matches navbar orbit logo) ── */
+	.footer__brand-link {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.65rem;
+		margin-bottom: var(--space-sm);
+		text-decoration: none;
+		color: var(--color-text-primary);
+		font-size: 1rem;
+		font-weight: 500;
+		letter-spacing: 0.03em;
+		flex-shrink: 0;
+		transition: color 0.2s ease;
+	}
+
+	.footer__brand-link:hover {
+		color: var(--color-accent-bright);
+	}
+
+	.footer__brand-orbit {
+		position: relative;
+		width: 1.75rem;
+		height: 1.75rem;
+		flex-shrink: 0;
+	}
+
+	.footer__brand-core {
+		position: absolute;
+		inset: 35%;
+		border-radius: 50%;
+		background: var(--color-accent);
+		box-shadow: 0 0 12px rgba(200, 176, 255, 0.6);
+	}
+
+	.footer__brand-ring {
+		position: absolute;
+		inset: 0;
+		border-radius: 50%;
+		border: 1px solid rgba(200, 176, 255, 0.35);
+		animation: footer-brand-orbit-spin 6s linear infinite;
+	}
+
+	.footer__brand-ring::after {
+		content: "";
+		position: absolute;
+		top: -2px;
+		left: 50%;
+		width: 4px;
+		height: 4px;
+		margin-left: -2px;
+		border-radius: 50%;
+		background: #fff;
+		box-shadow: 0 0 6px rgba(200, 176, 255, 0.9);
+	}
+
+	@keyframes footer-brand-orbit-spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.footer__brand-text {
+		background: linear-gradient(135deg, #fff 30%, var(--color-accent) 100%);
+		-webkit-background-clip: text;
+		background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+
+	.footer__brand-tagline {
+		font-size: 0.9rem;
+		line-height: 1.65;
+		color: var(--color-text-muted);
+		max-width: 22rem;
+		margin-bottom: var(--space-sm);
+	}
+
+	.footer__status {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.footer__status-dot {
+		width: 6px;
+		height: 6px;
+		border-radius: 50%;
+		background: var(--color-signal);
+		box-shadow: 0 0 8px var(--color-signal-glow);
+		animation: footer-status-pulse 2.4s ease-in-out infinite;
+	}
+
+	@keyframes footer-status-pulse {
+		0%,
+		100% {
+			opacity: 0.7;
+			transform: scale(1);
+		}
+		50% {
+			opacity: 1;
+			transform: scale(1.2);
+		}
+	}
+
+	/* ── Footer nav — shared .navbar__link classes; pill sits inside each link ── */
+	.footer__nav-links {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.15rem;
+		margin: 0;
+		list-style: none;
+		padding: 0;
+	}
+
+	/* ── Channel cards — social + signal ── */
+	.footer__social-list,
+	.footer__signal-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.65rem;
+	}
+
+	.footer__channel-link {
+		position: relative;
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		width: 100%;
+		min-height: 4.35rem;
+		padding: 0.75rem 1rem;
+		border-radius: 0.85rem;
+		color: var(--color-text-muted);
+		text-decoration: none;
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid var(--color-glass-border);
+		overflow: hidden;
+		transition:
+			color 0.3s ease,
+			border-color 0.3s ease,
+			transform 0.35s var(--footer-ease),
+			box-shadow 0.35s ease;
+	}
+
+	.footer__channel-link svg {
+		flex-shrink: 0;
+		transition: transform 0.35s var(--footer-ease);
+	}
+
+	.footer__channel-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		flex-shrink: 0;
+		border-radius: 0.55rem;
+		color: var(--color-accent);
+		background: rgba(200, 176, 255, 0.08);
+		border: 1px solid rgba(200, 176, 255, 0.14);
+	}
+
+	.footer__channel-icon svg {
+		width: 1rem;
+		height: 1rem;
+	}
+
+	.footer__channel-text {
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		justify-content: center;
+		gap: 0.12rem;
+		min-width: 0;
+		min-height: 2.35rem;
+	}
+
+	.footer__channel-label {
+		font-size: 0.68rem;
+		font-weight: 500;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: var(--color-text-subtle);
+		line-height: 1.2;
+	}
+
+	.footer__channel-value {
+		font-size: 0.88rem;
+		font-weight: 500;
+		letter-spacing: 0.02em;
+		color: var(--color-text-primary);
+		line-height: 1.35;
+		word-break: break-word;
+	}
+
+	.footer__channel-border {
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		padding: 1px;
+		background: conic-gradient(
+			from var(--footer-border-angle, 0deg),
+			transparent 0%,
+			var(--color-accent) 25%,
+			transparent 50%,
+			var(--color-accent-soft) 75%,
+			transparent 100%
+		);
+		-webkit-mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
+		mask:
+			linear-gradient(#fff 0 0) content-box,
+			linear-gradient(#fff 0 0);
+		-webkit-mask-composite: xor;
+		mask-composite: exclude;
+		opacity: 0;
+		transition: opacity 0.3s ease;
+	}
+
+	@property --footer-border-angle {
+		syntax: '<angle>';
+		initial-value: 0deg;
+		inherits: false;
+	}
+
+	.footer__channel-shine {
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(
+			105deg,
+			transparent 40%,
+			rgba(255, 255, 255, 0.08) 50%,
+			transparent 60%
+		);
+		transform: translateX(-120%);
+		transition: transform 0.6s var(--footer-ease);
+	}
+
+	.footer__channel-link:hover,
+	.footer__channel-link:focus-visible {
+		color: var(--color-text-primary);
+		border-color: transparent;
+		transform: translateY(-3px);
+		box-shadow: 0 12px 32px rgba(100, 64, 180, 0.25);
+	}
+
+	.footer__channel-link:hover .footer__channel-border,
+	.footer__channel-link:focus-visible .footer__channel-border {
+		opacity: 1;
+		animation: footer-border-spin 3s linear infinite;
+	}
+
+	.footer__channel-link:hover .footer__channel-shine,
+	.footer__channel-link:focus-visible .footer__channel-shine {
+		transform: translateX(120%);
+	}
+
+	.footer__channel-link:hover svg,
+	.footer__channel-link:focus-visible svg {
+		transform: scale(1.08);
+	}
+
+	.footer__channel-link--email:hover .footer__channel-icon,
+	.footer__channel-link--email:focus-visible .footer__channel-icon {
+		color: var(--color-accent-bright);
+		background: rgba(200, 176, 255, 0.14);
+		box-shadow: 0 0 16px rgba(200, 176, 255, 0.2);
+	}
+
+	.footer__channel-link--phone:hover .footer__channel-icon,
+	.footer__channel-link--phone:focus-visible .footer__channel-icon {
+		color: var(--color-signal);
+		background: rgba(125, 255, 168, 0.1);
+		border-color: rgba(125, 255, 168, 0.22);
+		box-shadow: 0 0 16px rgba(125, 255, 168, 0.18);
+	}
+
+	.footer__channel-link--phone:hover .footer__channel-value,
+	.footer__channel-link--phone:focus-visible .footer__channel-value {
+		color: var(--color-signal);
+	}
+
+	.footer__social-link:hover,
+	.footer__social-link:focus-visible {
+		box-shadow: 0 12px 32px rgba(100, 64, 180, 0.25);
+	}
+
+	.footer__social-link--facebook:hover .footer__channel-icon,
+	.footer__social-link--facebook:focus-visible .footer__channel-icon {
+		color: #4d9fff;
+		background: rgba(24, 119, 242, 0.14);
+		border-color: rgba(77, 159, 255, 0.28);
+		box-shadow: 0 0 16px rgba(24, 119, 242, 0.22);
+	}
+
+	.footer__social-link--facebook:hover .footer__channel-value,
+	.footer__social-link--facebook:focus-visible .footer__channel-value {
+		color: #6eb0ff;
+	}
+
+	.footer__social-link--instagram:hover,
+	.footer__social-link--instagram:focus-visible {
+		background: linear-gradient(
+			135deg,
+			rgba(225, 48, 108, 0.1) 0%,
+			rgba(131, 58, 180, 0.1) 50%,
+			rgba(247, 119, 55, 0.08) 100%
+		);
+		box-shadow: 0 12px 32px rgba(225, 48, 108, 0.18);
+	}
+
+	.footer__social-link--instagram:hover .footer__channel-icon,
+	.footer__social-link--instagram:focus-visible .footer__channel-icon {
+		color: #f77737;
+		background: rgba(225, 48, 108, 0.12);
+		border-color: rgba(247, 119, 55, 0.28);
+		box-shadow: 0 0 16px rgba(225, 48, 108, 0.2);
+	}
+
+	.footer__social-link--instagram:hover .footer__channel-value,
+	.footer__social-link--instagram:focus-visible .footer__channel-value {
+		color: #f77737;
+	}
+
+	@keyframes footer-border-spin {
+		to {
+			--footer-border-angle: 360deg;
+		}
+	}
+
+	.footer__timezone {
+		margin-top: var(--space-sm);
+		opacity: 0.7;
+	}
+
+	/* ── Bottom bar ── */
+	.footer__bar {
+		margin-top: var(--space-xl);
+		padding-top: var(--space-md);
+		border-top: 1px solid var(--color-glass-border);
+	}
+
+	.footer__copyright {
+		opacity: 0.8;
+		text-align: center;
+	}
+
+	/* ── Responsive ── */
+	@media (max-width: 900px) {
+		.footer__grid {
+			grid-template-columns: 1fr 1fr;
+		}
+
+		.footer__brand {
+			grid-column: 1 / -1;
+		}
+
+		.footer__constellation {
+			display: none;
+		}
+	}
+
+	@media (max-width: 560px) {
+		.footer {
+			padding-bottom: var(--space-md);
+		}
+
+		.footer__grid {
+			grid-template-columns: 1fr;
+			gap: var(--space-md);
+		}
+
+		.footer__cta-panel {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		.footer__cta-panel .cta-btn {
+			width: 100%;
+		}
+
+		.footer__orbit-ring,
+		.footer__orbit-dot {
+			display: none;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.footer__aurora-band,
+		.footer__beam-glow,
+		.footer__orbit-ring,
+		.footer__orbit-dot,
+		.footer__star,
+		.footer__brand-ring,
+		.footer__status-dot,
+		.footer__cta-glow,
+		.footer__constellation-path,
+		.footer__constellation-node {
+			animation: none !important;
+		}
+
+		.footer__constellation-path {
+			stroke-dashoffset: 0;
+		}
+
+		.footer__constellation-node {
+			opacity: 0.85;
+		}
+	}
+</style>

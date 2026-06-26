@@ -1,57 +1,19 @@
 ---
+import Layout from '../layouts/Layout.astro';
 import Hero from '../components/hero.astro';
-import NebulaSky from '../components/NebulaSky.astro';
-import Navbar from '../components/Navbar.astro';
-import StarField from '../components/StarField.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Portfolio</title>
-	</head>
-	<body>
-		<NebulaSky />
-		<StarField />
-		<Navbar />
-		<main id="home">
-			<Hero />
-		</main>
-		<section id="work" class="section-placeholder" aria-hidden="true" />
-		<section id="about" class="section-placeholder" aria-hidden="true" />
-		<section id="contact" class="section-placeholder" aria-hidden="true" />
-	</body>
-</html>
+<Layout>
+	<main id="home" class="home-main" tabindex="-1">
+		<Hero />
+	</main>
+
+	<section id="work" class="section-placeholder" aria-hidden="true" />
+	<section id="about" class="section-placeholder" aria-hidden="true" />
+</Layout>
 
 <style is:global>
-	*,
-	*::before,
-	*::after {
-		box-sizing: border-box;
-		margin: 0;
-		padding: 0;
-	}
-
-	html,
-	body {
-		min-height: 100%;
-	}
-
-	body {
-		position: relative;
-		font-family: system-ui, -apple-system, sans-serif;
-		color: #e8ecf4;
-		background:
-			radial-gradient(ellipse 120% 80% at 50% 0%, #1a1f3c 0%, transparent 55%),
-			radial-gradient(ellipse 80% 50% at 80% 100%, #12162b 0%, transparent 50%),
-			linear-gradient(180deg, #06080f 0%, #0c1020 40%, #080a14 100%);
-	}
-
-	main {
+	.home-main {
 		position: relative;
 		z-index: 4;
 		width: 100%;
@@ -66,15 +28,5 @@ import StarField from '../components/StarField.astro';
 
 	.section-placeholder {
 		min-height: 50vh;
-	}
-
-	/* Pause heavy background animations while the mobile menu is open */
-	body.menu-open .nebula-sky,
-	body.menu-open .nebula-sky *,
-	body.menu-open .star-field,
-	body.menu-open .star-field *,
-	body.menu-open .hero,
-	body.menu-open .hero * {
-		animation-play-state: paused !important;
 	}
 </style>

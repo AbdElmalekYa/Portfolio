@@ -1,0 +1,151 @@
+---
+import '../styles/global.css';
+import Footer from '../components/Footer.astro';
+import NebulaSky from '../components/NebulaSky.astro';
+import Navbar from '../components/Navbar.astro';
+import ScrollToNav from '../components/ScrollToNav.astro';
+import StarField from '../components/StarField.astro';
+
+export interface Props {
+	/** Document title — shown in the browser tab and social previews */
+	title?: string;
+	/** Meta description for SEO and link previews */
+	description?: string;
+	/** Open Graph / Twitter image path, resolved against the site origin */
+	image?: string;
+	/** Open Graph type */
+	type?: 'website' | 'article';
+	/** Prevent search engines from indexing this page */
+	noindex?: boolean;
+}
+
+const {
+	title = 'Portfolio | Full-stack developer & creative technologist',
+	description = 'Full-stack developer and creative technologist building immersive digital experiences where code meets the cosmos.',
+	image = '/favicon.svg',
+	type = 'website',
+	noindex = false,
+} = Astro.props;
+
+const siteName = 'Portfolio';
+const siteOrigin = Astro.site ?? Astro.url.origin;
+const canonicalURL = new URL(Astro.url.pathname, siteOrigin);
+const socialImageURL = new URL(image, siteOrigin);
+const pageTitle = title.includes(siteName) ? title : `${title} · ${siteName}`;
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<meta name="generator" content={Astro.generator} />
+
+		<title>{pageTitle}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonicalURL} />
+		{noindex && <meta name="robots" content="noindex, nofollow" />}
+		<meta name="theme-color" content="#06080f" />
+
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<link rel="icon" href="/favicon.ico" />
+
+		<meta property="og:type" content={type} />
+		<meta property="og:site_name" content={siteName} />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonicalURL} />
+		<meta property="og:image" content={socialImageURL} />
+		<meta property="og:locale" content="en_US" />
+
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:title" content={pageTitle} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={socialImageURL} />
+	</head>
+	<body>
+		<a class="skip-link" href="#home">Skip to content</a>
+
+		<NebulaSky />
+		<StarField />
+		<Navbar />
+
+		<slot />
+
+		<Footer />
+		<ScrollToNav />
+	</body>
+</html>
+
+<script>
+	const FADE_SELECTORS = '.fade-in, .fade-left, .fade-right, .fade-bottom';
+
+	const initFadeOnScroll = () => {
+		const elements = document.querySelectorAll<HTMLElement>(FADE_SELECTORS);
+		if (!elements.length) return;
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (!entry.isIntersecting) continue;
+					(entry.target as HTMLElement).style.animationPlayState = 'running';
+					observer.unobserve(entry.target);
+				}
+			},
+			{ threshold: 0.12, rootMargin: '0px 0px -40px 0px' },
+		);
+
+		for (const el of elements) {
+			const inViewport = el.getBoundingClientRect().top < window.innerHeight;
+			if (inViewport) {
+				el.style.animationPlayState = 'running';
+			} else {
+				el.style.animationPlayState = 'paused';
+				observer.observe(el);
+			}
+		}
+	};
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initFadeOnScroll, { once: true });
+	} else {
+		initFadeOnScroll();
+	}
+</script>
+
+<style is:global>
+	.skip-link {
+		position: absolute;
+		top: 0.75rem;
+		left: 0.75rem;
+		z-index: 10000;
+		padding: 0.6rem 1rem;
+		border-radius: 999px;
+		font-family: var(--font-body);
+		font-size: 0.8125rem;
+		font-weight: 500;
+		letter-spacing: 0.02em;
+		color: var(--color-text-primary);
+		background: var(--color-panel);
+		border: 1px solid var(--color-glass-border-accent);
+		text-decoration: none;
+		transform: translateY(-200%);
+		transition: transform 0.25s var(--ease-out);
+	}
+
+	.skip-link:focus-visible {
+		transform: translateY(0);
+		outline: none;
+		box-shadow: 0 0 0 3px var(--color-accent-glow);
+	}
+
+	/* Pause heavy background animations while the mobile menu is open */
+	body.menu-open .nebula-sky,
+	body.menu-open .nebula-sky *,
+	body.menu-open .star-field,
+	body.menu-open .star-field *,
+	body.menu-open .hero,
+	body.menu-open .hero * {
+		animation-play-state: paused !important;
+	}
+</style>
