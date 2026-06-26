@@ -10,8 +10,6 @@ const supernovaRays = [0, 45, 90, 135] as const;
 ---
 
 <header class="nav-shell" data-nav>
-  <div class="nav-backdrop" data-nav-backdrop hidden aria-hidden="true"></div>
-
   <div class="nav-bezel">
     <nav class="nav-glass" aria-label="Main navigation">
       <div class="nav-glass-backdrop" aria-hidden="true"></div>
@@ -109,7 +107,6 @@ const supernovaRays = [0, 45, 90, 135] as const;
   const shell = document.querySelector<HTMLElement>("[data-nav]");
   const toggle = document.querySelector<HTMLButtonElement>("[data-nav-toggle]");
   const menu = document.querySelector<HTMLElement>("[data-nav-menu]");
-  const backdrop = document.querySelector<HTMLElement>("[data-nav-backdrop]");
   const navLinks = document.querySelectorAll<HTMLAnchorElement>("[data-nav-link]");
 
   const sectionIds = [
@@ -158,9 +155,7 @@ const supernovaRays = [0, 45, 90, 135] as const;
 
     const finishClose = () => {
       menu.setAttribute("hidden", "");
-      backdrop?.setAttribute("hidden", "");
       menu.classList.remove("nav-mobile--closing");
-      document.body.style.overflow = "";
       if (closeTimer) {
         clearTimeout(closeTimer);
         closeTimer = null;
@@ -170,7 +165,6 @@ const supernovaRays = [0, 45, 90, 135] as const;
     const setOpen = (open: boolean) => {
       toggle.setAttribute("aria-expanded", String(open));
       shell.classList.toggle("nav-shell--open", open);
-      document.body.style.overflow = open ? "hidden" : "";
 
       if (closeTimer) {
         clearTimeout(closeTimer);
@@ -180,7 +174,6 @@ const supernovaRays = [0, 45, 90, 135] as const;
       if (open) {
         menu.classList.remove("nav-mobile--closing");
         menu.removeAttribute("hidden");
-        backdrop?.removeAttribute("hidden");
         menu.style.animation = "none";
         void menu.offsetHeight;
         menu.style.animation = "";
@@ -206,8 +199,6 @@ const supernovaRays = [0, 45, 90, 135] as const;
     menu.querySelectorAll("a").forEach((link) => {
       link.addEventListener("click", () => setOpen(false));
     });
-
-    backdrop?.addEventListener("click", () => setOpen(false));
   }
 
   if (navLinks.length) {
@@ -246,35 +237,8 @@ const supernovaRays = [0, 45, 90, 135] as const;
     padding-block: 0.75rem;
   }
 
-  .nav-backdrop {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    background: rgba(6, 8, 15, 0.72);
-    backdrop-filter: blur(10px) saturate(140%);
-    -webkit-backdrop-filter: blur(10px) saturate(140%);
-    pointer-events: auto;
-    animation: backdrop-in 0.3s var(--nav-ease);
-  }
-
-  .nav-shell--open .nav-backdrop:not([hidden]) {
-    display: block;
-  }
-
-  @keyframes backdrop-in {
-    from {
-      opacity: 0;
-    }
-
-    to {
-      opacity: 1;
-    }
-  }
-
   .nav-bezel {
     position: relative;
-    z-index: 1;
     width: 100%;
     max-width: 72rem;
     margin-inline: auto;
@@ -899,8 +863,6 @@ const supernovaRays = [0, 45, 90, 135] as const;
 
   .nav-mobile {
     display: none;
-    position: relative;
-    z-index: 1;
     width: 100%;
     max-width: 72rem;
     margin: 0.75rem auto 0;
@@ -909,10 +871,10 @@ const supernovaRays = [0, 45, 90, 135] as const;
     background:
       linear-gradient(
         180deg,
-        rgba(255, 255, 255, 0.14) 0%,
-        rgba(255, 255, 255, 0.04) 100%
+        rgba(255, 255, 255, 0.12) 0%,
+        rgba(255, 255, 255, 0.03) 100%
       ),
-      rgba(12, 16, 32, 0.88);
+      rgba(255, 255, 255, 0.05);
     backdrop-filter: blur(40px) saturate(220%) brightness(1.06);
     -webkit-backdrop-filter: blur(40px) saturate(220%) brightness(1.06);
     border: 1px solid rgba(255, 255, 255, 0.22);
@@ -1047,27 +1009,6 @@ const supernovaRays = [0, 45, 90, 135] as const;
     }
   }
 
-  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .nav-backdrop {
-      background: rgba(6, 8, 15, 0.92);
-    }
-
-    .nav-mobile {
-      background: rgba(12, 16, 32, 0.96);
-    }
-
-    .nav-glass-backdrop {
-      background:
-        linear-gradient(
-          180deg,
-          rgba(255, 255, 255, 0.1) 0%,
-          rgba(255, 255, 255, 0.02) 50%,
-          rgba(255, 255, 255, 0.04) 100%
-        ),
-        rgba(12, 16, 32, 0.92);
-    }
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .brand-mark,
     .nav-glass-sweep,
@@ -1075,7 +1016,6 @@ const supernovaRays = [0, 45, 90, 135] as const;
     .nav-supernova::before,
     .nav-supernova-burst,
     .nav-supernova-burst::after,
-    .nav-backdrop,
     .nav-mobile,
     .nav-mobile--closing {
       animation: none;
