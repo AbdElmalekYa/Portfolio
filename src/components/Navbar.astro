@@ -224,6 +224,7 @@ const supernovaRays = [0, 45, 90, 135] as const;
     --nav-accent: #c8b0ff;
     --nav-accent-bright: #ebe4ff;
     --nav-ease: cubic-bezier(0.22, 1, 0.36, 1);
+    --nav-mobile-filter: blur(40px) saturate(220%) brightness(1.06);
 
     position: fixed;
     inset: 0 0 auto;
@@ -875,8 +876,8 @@ const supernovaRays = [0, 45, 90, 135] as const;
         rgba(255, 255, 255, 0.03) 100%
       ),
       rgba(255, 255, 255, 0.05);
-    backdrop-filter: blur(40px) saturate(220%) brightness(1.06);
-    -webkit-backdrop-filter: blur(40px) saturate(220%) brightness(1.06);
+    backdrop-filter: var(--nav-mobile-filter);
+    -webkit-backdrop-filter: var(--nav-mobile-filter);
     border: 1px solid rgba(255, 255, 255, 0.22);
     box-shadow:
       0 12px 40px rgba(0, 0, 0, 0.2),
