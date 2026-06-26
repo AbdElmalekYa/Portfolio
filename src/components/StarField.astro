@@ -1,5 +1,5 @@
 ---
-const STAR_COUNT = 60;
+const STAR_COUNT = 35;
 
 type GlowType = "soft" | "twinkle" | "flare";
 
@@ -74,12 +74,12 @@ function createStars(count: number): Star[] {
       size,
       glowType,
       glow,
-      delay: Math.random() * 8,
-      duration: 3 + Math.random() * 4,
+      delay: Math.random() * 4,
+      duration: 1.5 + Math.random() * 2,
       driftX: (Math.random() - 0.5) * 14,
       driftY: (Math.random() - 0.5) * 10,
-      driftDuration: 4 + Math.random() * 10,
-      driftDelay: Math.random() * 4,
+      driftDuration: 1.5 + Math.random() * 3.5,
+      driftDelay: Math.random() * 1.5,
     };
   });
 }
@@ -201,7 +201,7 @@ const stars = createStars(STAR_COUNT);
     box-shadow:
       0 0 1px rgba(255, 255, 255, 1),
       0 0 4px rgba(255, 255, 255, 0.75),
-      0 0 10px rgba(180, 210, 255, 0.35);
+      0 0 10px rgba(180, 205, 255, 0.35);
     animation:
       star-drift var(--drift-duration) ease-in-out infinite alternate,
       glow-flare var(--glow-duration) ease-in-out infinite;

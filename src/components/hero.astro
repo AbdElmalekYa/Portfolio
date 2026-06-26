@@ -1,23 +1,17 @@
 ---
 interface Props {
-  badge?: string;
-  headline?: string[];
-  subheadline?: string;
-  roles?: string[];
+	badge?: string;
+	headline?: string[];
+	subheadline?: string;
+	roles?: string[];
 }
 
 const {
-  badge = "Open to new galaxies",
-  headline = ["Crafting", "digital", "constellations"],
-  subheadline = "Full-stack developer & creative technologist building immersive experiences where code meets the cosmos.",
-  roles = ["Developer", "Designer", "Explorer"],
+	badge = 'Open to new galaxies',
+	headline = ['Crafting', 'digital', 'constellations'],
+	subheadline = 'Full-stack developer & creative technologist building immersive experiences where code meets the cosmos.',
+	roles = ['Developer', 'Designer', 'Explorer'],
 } = Astro.props;
-
-const stats = [
-  { value: "5+", label: "Years" },
-  { value: "20+", label: "Projects" },
-  { value: "∞", label: "Curiosity" },
-];
 ---
 
 <section class="hero" data-hero>
@@ -27,35 +21,30 @@ const stats = [
     <div class="orbit orbit--1"><span class="orbit-dot"></span></div>
     <div class="orbit orbit--2"><span class="orbit-dot"></span></div>
     <div class="orbit orbit--3"><span class="orbit-dot"></span></div>
-    <div class="singularity-rays">
-      {
-        [0, 30, 60, 90, 120, 150].map((angle) => (
-          <span class="ray" style={`--ray-angle: ${angle}deg`} />
-        ))
-      }
-    </div>
   </div>
 
-  <div class="hero-grid">
-    <div class="hero-content">
-      <p class="hero-badge" data-reveal>
-        <span class="hero-badge-pulse" aria-hidden="true"></span>
-        {badge}
-      </p>
+	<div class="hero-grid">
+		<div class="hero-content">
+			<p class="hero-badge" data-reveal>
+				<span class="hero-badge-pulse" aria-hidden="true"></span>
+				{badge}
+			</p>
 
-      <h1 class="hero-headline">
-        {
-          headline.map((line, i) => (
-            <span
-              class="hero-headline-line"
-              data-reveal
-              style={`--delay: ${0.1 + i * 0.12}s`}
-            >
-              <span class="hero-headline-text">{line}</span>
-            </span>
-          ))
-        }
-      </h1>
+			<h1 class="hero-headline">
+				{
+					headline.map((line, i) => (
+						<span class="hero-headline-line">
+							<span
+								class="hero-headline-text"
+								data-reveal
+								style={`--delay: ${0.1 + i * 0.12}s`}
+							>
+								{line}
+							</span>
+						</span>
+					))
+				}
+			</h1>
 
       <div
         class="hero-roles"
@@ -76,42 +65,17 @@ const stats = [
         {subheadline}
       </p>
 
-      <div class="hero-actions" data-reveal style="--delay: 0.7s">
-        <a href="#work" class="hero-cta hero-cta--primary">
-          <span class="hero-cta-border" aria-hidden="true"></span>
-          <span class="hero-cta-inner">View work</span>
-        </a>
-        <a href="#contact" class="hero-cta hero-cta--ghost">
-          <span class="hero-cta-inner">Let's talk</span>
-        </a>
-      </div>
-
-      <div class="hero-stats" data-reveal style="--delay: 0.82s">
-        {
-          stats.map((stat, i) => (
-            <>
-              {i > 0 && <span class="hero-stat-divider" aria-hidden="true" />}
-              <div class="hero-stat">
-                <span class="hero-stat-value">{stat.value}</span>
-                <span class="hero-stat-label">{stat.label}</span>
-              </div>
-            </>
-          ))
-        }
-      </div>
-    </div>
-  </div>
-
-  <a
-    href="#work"
-    class="hero-scroll"
-    aria-label="Scroll to work"
-    data-reveal
-    style="--delay: 1s"
-  >
-    <span class="hero-scroll-line" aria-hidden="true"></span>
-    <span class="hero-scroll-text">Explore</span>
-  </a>
+			<div class="hero-actions" data-reveal style="--delay: 0.7s">
+				<a href="#work" class="hero-cta hero-cta--primary">
+					<span class="hero-cta-border" aria-hidden="true"></span>
+					<span class="hero-cta-inner">View work</span>
+				</a>
+				<a href="#contact" class="hero-cta hero-cta--ghost">
+					<span class="hero-cta-inner">Let's talk</span>
+				</a>
+			</div>
+		</div>
+	</div>
 </section>
 
 <script>
@@ -121,10 +85,20 @@ const stats = [
     "(prefers-reduced-motion: reduce)",
   ).matches;
 
-  if (hero && !reducedMotion) {
-    hero.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => {
-      el.classList.add("is-visible");
-    });
+  if (hero) {
+    const reveal = () => {
+      requestAnimationFrame(() => {
+        hero.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => {
+          el.classList.add("is-visible");
+        });
+      });
+    };
+
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", reveal, { once: true });
+    } else {
+      reveal();
+    }
   }
 
   if (parallax && hero && !reducedMotion) {
@@ -168,19 +142,12 @@ const stats = [
       { once: true },
     );
   }
-
-  if (hero && reducedMotion) {
-    hero.querySelectorAll<HTMLElement>("[data-reveal]").forEach((el) => {
-      el.classList.add("is-visible");
-    });
-  }
 </script>
 
 <style>
   .hero {
     --hero-accent: #c8b0ff;
-    --hero-accent-bright: #ebe4ff;
-    --hero-accent-dim: rgba(200, 176, 255, 0.35);
+		--hero-accent-bright: #ebe4ff;
     --hero-text: rgba(248, 250, 255, 0.96);
     --hero-muted: rgba(220, 228, 255, 0.62);
     --hero-ease: cubic-bezier(0.22, 1, 0.36, 1);
@@ -222,7 +189,7 @@ const stats = [
     --parallax-y: 0px;
 
     position: absolute;
-    top: 42%;
+    top: 50%;
     right: clamp(-4rem, 8vw, 6rem);
     width: clamp(18rem, 42vw, 32rem);
     height: clamp(18rem, 42vw, 32rem);
@@ -313,63 +280,38 @@ const stats = [
     opacity: 0.7;
   }
 
-  .singularity-rays {
-    position: absolute;
-    inset: 20%;
-  }
+	/* ── Badge ── */
+	.hero-badge {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.55rem;
+		margin-bottom: 1.75rem;
+		padding: 0.4rem 0.9rem 0.4rem 0.65rem;
+		font-size: 0.72rem;
+		font-weight: 500;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+		color: var(--hero-accent);
+		background: var(--hero-glass);
+		border: 1px solid var(--hero-glass-border);
+		border-radius: 999px;
+		backdrop-filter: blur(12px) saturate(140%);
+		-webkit-backdrop-filter: blur(12px) saturate(140%);
+		box-shadow:
+			inset 0 1px 0 rgba(255, 255, 255, 0.12),
+			0 8px 32px rgba(0, 0, 0, 0.2);
+	}
 
-  .ray {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 1px;
-    height: 45%;
-    margin-left: -0.5px;
-    transform-origin: center top;
-    transform: rotate(var(--ray-angle)) translateY(-50%);
-    background: linear-gradient(
-      180deg,
-      rgba(235, 228, 255, 0.35) 0%,
-      rgba(200, 176, 255, 0.08) 60%,
-      transparent 100%
-    );
-    opacity: 0.5;
-    animation: ray-flicker 3s ease-in-out infinite;
-    animation-delay: calc(var(--ray-angle) / 360deg * 2s);
-  }
+	.hero-badge-pulse {
+		width: 7px;
+		height: 7px;
+		border-radius: 50%;
+		background: #7dffa8;
+		box-shadow: 0 0 10px rgba(125, 255, 168, 0.8);
+		animation: badge-pulse 2.4s ease-in-out infinite;
+	}
 
-  /* ── Badge ── */
-  .hero-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-    margin-bottom: 1.75rem;
-    padding: 0.4rem 0.9rem 0.4rem 0.65rem;
-    font-size: 0.72rem;
-    font-weight: 500;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--hero-accent);
-    background: var(--hero-glass);
-    border: 1px solid var(--hero-glass-border);
-    border-radius: 999px;
-    backdrop-filter: blur(12px) saturate(140%);
-    -webkit-backdrop-filter: blur(12px) saturate(140%);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.12),
-      0 8px 32px rgba(0, 0, 0, 0.2);
-  }
-
-  .hero-badge-pulse {
-    width: 7px;
-    height: 7px;
-    border-radius: 50%;
-    background: #7dffa8;
-    box-shadow: 0 0 10px rgba(125, 255, 168, 0.8);
-    animation: badge-pulse 2.4s ease-in-out infinite;
-  }
-
-  /* ── Headline ── */
+	/* ── Headline ── */
   .hero-headline {
     display: flex;
     flex-direction: column;
@@ -400,6 +342,16 @@ const stats = [
     background-clip: text;
     color: transparent;
     animation: shimmer 6s ease-in-out infinite;
+  }
+
+  .hero-headline-text[data-reveal] {
+    opacity: 1;
+    transform: translateY(110%);
+  }
+
+  .hero-headline-text[data-reveal].is-visible {
+    opacity: 1;
+    transform: translateY(0);
   }
 
   .hero-headline-line:nth-child(2) .hero-headline-text {
@@ -450,12 +402,11 @@ const stats = [
     color: var(--hero-muted);
   }
 
-  .hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.85rem;
-    margin-bottom: 2.75rem;
-  }
+	.hero-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.85rem;
+	}
 
   .hero-cta {
     position: relative;
@@ -539,102 +490,7 @@ const stats = [
     box-shadow: 0 0 24px rgba(200, 176, 255, 0.12);
   }
 
-  /* ── Stats ── */
-  .hero-stats {
-    display: inline-flex;
-    align-items: center;
-    gap: 1.25rem;
-    padding: 0.85rem 1.35rem;
-    background: var(--hero-glass);
-    border: 1px solid var(--hero-glass-border);
-    border-radius: 1rem;
-    backdrop-filter: blur(16px) saturate(150%);
-    -webkit-backdrop-filter: blur(16px) saturate(150%);
-    box-shadow:
-      inset 0 1px 0 rgba(255, 255, 255, 0.1),
-      0 12px 40px rgba(0, 0, 0, 0.25);
-  }
-
-  .hero-stat {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.15rem;
-    min-width: 3.5rem;
-  }
-
-  .hero-stat-value {
-    font-size: 1.35rem;
-    font-weight: 300;
-    letter-spacing: 0.02em;
-    color: var(--hero-accent-bright);
-    text-shadow: 0 0 20px rgba(200, 176, 255, 0.3);
-  }
-
-  .hero-stat-label {
-    font-size: 0.65rem;
-    font-weight: 500;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--hero-muted);
-  }
-
-  .hero-stat-divider {
-    width: 1px;
-    height: 2rem;
-    background: linear-gradient(
-      180deg,
-      transparent,
-      rgba(200, 176, 255, 0.25),
-      transparent
-    );
-  }
-
-  /* ── Scroll cue ── */
-  .hero-scroll {
-    position: absolute;
-    bottom: clamp(1.5rem, 4vh, 2.5rem);
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    color: var(--hero-muted);
-    font-size: 0.65rem;
-    font-weight: 500;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    transition: color 0.3s ease;
-  }
-
-  .hero-scroll:hover {
-    color: var(--hero-accent);
-  }
-
-  .hero-scroll-line {
-    width: 1px;
-    height: 2.5rem;
-    background: linear-gradient(180deg, var(--hero-accent-dim), transparent);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .hero-scroll-line::after {
-    content: "";
-    position: absolute;
-    top: -100%;
-    left: 0;
-    width: 100%;
-    height: 50%;
-    background: var(--hero-accent);
-    box-shadow: 0 0 8px var(--hero-accent);
-    animation: scroll-drop 2s ease-in-out infinite;
-  }
-
-  /* ── Reveal animation ── */
+	/* ── Reveal animation ── */
   [data-reveal] {
     opacity: 0;
     transform: translateY(1.5rem);
@@ -709,29 +565,19 @@ const stats = [
     }
   }
 
-  @keyframes ray-flicker {
-    0%,
-    100% {
-      opacity: 0.3;
-    }
-    50% {
-      opacity: 0.7;
-    }
-  }
+	@keyframes badge-pulse {
+		0%,
+		100% {
+			opacity: 1;
+			transform: scale(1);
+		}
+		50% {
+			opacity: 0.6;
+			transform: scale(0.85);
+		}
+	}
 
-  @keyframes badge-pulse {
-    0%,
-    100% {
-      opacity: 1;
-      transform: scale(1);
-    }
-    50% {
-      opacity: 0.6;
-      transform: scale(0.85);
-    }
-  }
-
-  @keyframes role-cycle {
+	@keyframes role-cycle {
     0%,
     28%,
     100% {
@@ -751,20 +597,11 @@ const stats = [
     }
   }
 
-  @keyframes scroll-drop {
-    0% {
-      top: -50%;
-    }
-    100% {
-      top: 150%;
-    }
-  }
-
-  /* ── Responsive ── */
+	/* ── Responsive ── */
   @media (max-width: 900px) {
     .hero-singularity {
       right: 50%;
-      top: 14%;
+			top: 50%;
       transform: translate(
         calc(50% + var(--parallax-x)),
         calc(-50% + var(--parallax-y))
@@ -780,23 +617,19 @@ const stats = [
       margin-inline: auto;
     }
 
-    .hero-badge {
-      margin-inline: auto;
-    }
+		.hero-badge {
+			margin-inline: auto;
+		}
 
-    .hero-sub {
-      margin-inline: auto;
-    }
+		.hero-sub {
+			margin-inline: auto;
+		}
 
-    .hero-actions {
-      justify-content: center;
-    }
+		.hero-actions {
+			justify-content: center;
+		}
 
-    .hero-stats {
-      margin-inline: auto;
-    }
-
-    .hero-roles {
+		.hero-roles {
       margin-inline: auto;
       width: fit-content;
     }
@@ -807,12 +640,10 @@ const stats = [
     .singularity-core,
     .singularity-glow,
     .orbit,
-    .ray,
-    .hero-badge-pulse,
-    .hero-headline-text,
-    .hero-role,
-    .hero-cta-border,
-    .hero-scroll-line::after {
+		.hero-badge-pulse,
+		.hero-headline-text,
+		.hero-role,
+		.hero-cta-border {
       animation: none !important;
     }
 
@@ -830,6 +661,10 @@ const stats = [
       opacity: 1;
       transform: none;
       transition: none;
+    }
+
+    .hero-headline-text[data-reveal] {
+      transform: none;
     }
   }
 </style>
