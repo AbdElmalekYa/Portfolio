@@ -224,7 +224,10 @@ const supernovaRays = [0, 45, 90, 135] as const;
     --nav-accent: #c8b0ff;
     --nav-accent-bright: #ebe4ff;
     --nav-ease: cubic-bezier(0.22, 1, 0.36, 1);
-    --nav-mobile-filter: blur(40px) saturate(220%) brightness(1.06);
+    --nav-mobile-blur: 40px;
+    --nav-mobile-saturate: 220%;
+    --nav-mobile-bg: rgba(20, 24, 46, 0.78);
+    --nav-mobile-bg-tint: rgba(200, 180, 255, 0.1);
 
     position: fixed;
     inset: 0 0 auto;
@@ -236,6 +239,10 @@ const supernovaRays = [0, 45, 90, 135] as const;
 
   .nav-shell--scrolled {
     padding-block: 0.75rem;
+  }
+
+  .nav-shell--open {
+    pointer-events: auto;
   }
 
   .nav-bezel {
@@ -864,26 +871,46 @@ const supernovaRays = [0, 45, 90, 135] as const;
 
   .nav-mobile {
     display: none;
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     width: 100%;
     max-width: 72rem;
     margin: 0.75rem auto 0;
     padding: 1.25rem;
     border-radius: 1.25rem;
-    background:
-      linear-gradient(
-        180deg,
-        rgba(255, 255, 255, 0.12) 0%,
-        rgba(255, 255, 255, 0.03) 100%
-      ),
-      rgba(255, 255, 255, 0.05);
-    backdrop-filter: var(--nav-mobile-filter);
-    -webkit-backdrop-filter: var(--nav-mobile-filter);
+    background: transparent;
     border: 1px solid rgba(255, 255, 255, 0.22);
     box-shadow:
       0 12px 40px rgba(0, 0, 0, 0.2),
       inset 0 1px 0 rgba(255, 255, 255, 0.3);
     pointer-events: auto;
     animation: mobile-in 0.35s var(--nav-ease);
+    transform: translateZ(0);
+  }
+
+  .nav-mobile::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.14) 0%,
+        rgba(255, 255, 255, 0.04) 100%
+      ),
+      linear-gradient(135deg, var(--nav-mobile-bg) 0%, var(--nav-mobile-bg-tint) 100%);
+    backdrop-filter: blur(var(--nav-mobile-blur)) saturate(var(--nav-mobile-saturate)) brightness(1.06);
+    -webkit-backdrop-filter: blur(var(--nav-mobile-blur)) saturate(var(--nav-mobile-saturate))
+      brightness(1.06);
+  }
+
+  .nav-mobile > * {
+    position: relative;
+    z-index: 1;
   }
 
   .nav-mobile--closing {
@@ -1007,6 +1034,18 @@ const supernovaRays = [0, 45, 90, 135] as const;
 
     .nav-mobile:not([hidden]) {
       display: block;
+    }
+  }
+
+  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .nav-mobile::before {
+      background:
+        linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.12) 0%,
+          rgba(255, 255, 255, 0.04) 100%
+        ),
+        rgba(14, 18, 36, 0.94);
     }
   }
 
