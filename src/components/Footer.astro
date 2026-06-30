@@ -1,4 +1,10 @@
 ---
+/**
+ * Footer — contact CTA, navigation, social links, and lightweight backdrop.
+ * Scroll reveals use compositor-friendly view() timelines (see .footer-reveal).
+ * Global StarField + NebulaSky provide the cosmic atmosphere.
+ */
+
 interface Props {
 	facebookUrl?: string;
 	instagramUrl?: string;
@@ -13,6 +19,7 @@ const {
 	phone = '+963956667367',
 } = Astro.props;
 
+/** Strip spaces for tel: href; format +XXX XXX XXX XXXX for display */
 const phoneHref = `tel:${phone.replace(/\s/g, '')}`;
 const phoneDisplay = phone.replace(/^(\+\d{3})(\d{3})(\d{3})(\d{3})$/, '$1 $2 $3 $4');
 
@@ -21,22 +28,61 @@ const navLinks = [
 	{ href: '#work', label: 'Work' },
 	{ href: '#about', label: 'About' },
 	{ href: '#contact', label: 'Contact' },
+] as const;
+
+type SocialId = 'facebook' | 'instagram';
+type ContactId = 'email' | 'phone';
+
+interface SocialChannel {
+	id: SocialId;
+	href: string;
+	label: string;
+	ariaLabel: string;
+}
+
+interface ContactChannel {
+	id: ContactId;
+	href: string;
+	label: string;
+	value: string;
+}
+
+const socialChannels: SocialChannel[] = [
+	{
+		id: 'facebook',
+		href: facebookUrl,
+		label: 'Facebook',
+		ariaLabel: 'Follow on Facebook',
+	},
+	{
+		id: 'instagram',
+		href: instagramUrl,
+		label: 'Instagram',
+		ariaLabel: 'Follow on Instagram',
+	},
 ];
 
-const year = new Date().getFullYear();
+const contactChannels: ContactChannel[] = [
+	{ id: 'email', href: `mailto:${email}`, label: 'Email', value: email },
+	{ id: 'phone', href: phoneHref, label: 'Phone', value: phoneDisplay },
+];
 
-/** Decorative micro-stars scattered across the footer cosmos layer */
-const footerStars = Array.from({ length: 14 }, (_, i) => ({
-	x: `${4 + ((i * 19.7) % 92)}%`,
-	y: `${6 + ((i * 11.3) % 88)}%`,
-	size: i % 5 === 0 ? 2.5 : i % 3 === 0 ? 1.5 : 1,
-	delay: `${((i * 0.41) % 3.2).toFixed(2)}s`,
-	duration: `${(2.4 + (i % 6) * 0.55).toFixed(1)}s`,
-	opacity: 0.35 + (i % 4) * 0.15,
-}));
+/** Scroll-linked reveal ranges (animation-timeline: view) — stagger without JS */
+const revealRange = {
+	cta: 'entry 0% entry 18%',
+	divider: 'entry 2% entry 20%',
+	brand: 'entry 4% entry 22%',
+	nav: 'entry 6% entry 24%',
+	social: 'entry 8% entry 26%',
+	contact: 'entry 10% entry 28%',
+	bar: 'entry 12% entry 30%',
+} as const;
+
+const year = new Date().getFullYear();
 ---
 
 <footer class="footer" id="contact" data-footer>
+	<!-- Lightweight backdrop — StarField + NebulaSky carry the cosmic look -->
 	<div class="footer__aurora" aria-hidden="true">
 		<span class="footer__aurora-band footer__aurora-band--1"></span>
 		<span class="footer__aurora-band footer__aurora-band--2"></span>
@@ -48,35 +94,12 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 		<span class="footer__beam-glow"></span>
 	</div>
 
-	<div class="footer__cosmos" aria-hidden="true">
-		<span class="footer__orbit-ring"></span>
-		<span class="footer__orbit-dot"></span>
-		{
-			footerStars.map((star) => (
-				<span
-					class="footer__star"
-					style={`left:${star.x};top:${star.y};--size:${star.size}px;--delay:${star.delay};--duration:${star.duration};--opacity:${star.opacity}`}
-				/>
-			))
-		}
-		<svg class="footer__constellation" viewBox="0 0 320 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-			<path
-				class="footer__constellation-path"
-				d="M20 80 L60 40 L100 70 L140 30 L180 55 L220 20 L260 50 L300 35"
-				stroke="currentColor"
-				stroke-width="0.75"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-			/>
-			<circle class="footer__constellation-node" cx="60" cy="40" r="2.5" />
-			<circle class="footer__constellation-node" cx="140" cy="30" r="2" />
-			<circle class="footer__constellation-node" cx="220" cy="20" r="2.5" />
-			<circle class="footer__constellation-node" cx="300" cy="35" r="2" />
-		</svg>
-	</div>
-
 	<div class="container footer__inner">
-		<div class="footer__cta-panel glass-panel fade-bottom" style="animation-delay: 0.05s">
+		<!-- CTA panel -->
+		<div
+			class="footer__cta-panel glass-panel footer-reveal"
+			style={`--reveal-range: ${revealRange.cta}`}
+		>
 			<div class="footer__cta-glow" aria-hidden="true"></div>
 			<div class="footer__cta-content">
 				<p class="eyebrow footer__cta-eyebrow">Ready for liftoff?</p>
@@ -101,27 +124,25 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 			</a>
 		</div>
 
-		<hr class="divider footer__divider fade-in" style="animation-delay: 0.12s" />
+		<hr class="divider footer__divider footer-reveal" style={`--reveal-range: ${revealRange.divider}`} />
 
 		<div class="footer__grid">
-			<div class="footer__brand fade-left" style="animation-delay: 0.15s">
+			<!-- Brand column -->
+			<div class="footer__brand footer-reveal" style={`--reveal-range: ${revealRange.brand}`}>
 				<a href="#home" class="footer__brand-link">
-					<span class="footer__brand-orbit" aria-hidden="true">
-						<span class="footer__brand-core"></span>
-						<span class="footer__brand-ring"></span>
-					</span>
 					<span class="footer__brand-text">Portfolio</span>
 				</a>
 				<p class="footer__brand-tagline">
 					Full-stack developer & creative technologist crafting immersive digital experiences.
 				</p>
-				<p class="tagline footer__status">
-					<span class="footer__status-dot" aria-hidden="true"></span>
+				<p class="badge">
+					<span class="badge__dot" aria-hidden="true"></span>
 					Available for new projects
 				</p>
 			</div>
 
-			<nav class="footer__nav fade-bottom" style="animation-delay: 0.2s" aria-label="Footer navigation">
+			<!-- Navigation — reuses navbar link styles; active state synced via data-nav-link -->
+			<nav class="footer__nav footer-reveal" style={`--reveal-range: ${revealRange.nav}`} aria-label="Footer navigation">
 				<p class="caption footer__col-label">Navigate</p>
 				<ul class="navbar__links footer__nav-links" role="list">
 					{
@@ -139,103 +160,90 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 				</ul>
 			</nav>
 
-			<div class="footer__social fade-bottom" style="animation-delay: 0.28s">
+			<!-- Social channels -->
+			<div class="footer__social footer-reveal" style={`--reveal-range: ${revealRange.social}`}>
 				<p class="caption footer__col-label">Connect</p>
-				<ul class="footer__social-list" role="list">
-					<li>
-						<a
-							href={facebookUrl}
-							class="footer__channel-link footer__social-link footer__social-link--facebook"
-							target="_blank"
-							rel="noopener noreferrer"
-							aria-label="Follow on Facebook"
-						>
-							<span class="footer__channel-border footer__social-border" aria-hidden="true"></span>
-							<span class="footer__channel-shine footer__social-shine" aria-hidden="true"></span>
-							<span class="footer__channel-icon" aria-hidden="true">
-								<svg viewBox="0 0 24 24" fill="currentColor">
-									<path
-										d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"
-									/>
-								</svg>
-							</span>
-							<span class="footer__channel-text">
-								<span class="footer__channel-label">Facebook</span>
-								<span class="footer__channel-value">Follow us</span>
-							</span>
-						</a>
-					</li>
-					<li>
-						<a
-							href={instagramUrl}
-							class="footer__channel-link footer__social-link footer__social-link--instagram"
-							target="_blank"
-							rel="noopener noreferrer"
-							aria-label="Follow on Instagram"
-						>
-							<span class="footer__channel-border footer__social-border" aria-hidden="true"></span>
-							<span class="footer__channel-shine footer__social-shine" aria-hidden="true"></span>
-							<span class="footer__channel-icon" aria-hidden="true">
-								<svg viewBox="0 0 24 24" fill="currentColor">
-									<path
-										d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"
-									/>
-								</svg>
-							</span>
-							<span class="footer__channel-text">
-								<span class="footer__channel-label">Instagram</span>
-								<span class="footer__channel-value">Follow us</span>
-							</span>
-						</a>
-					</li>
+				<ul class="footer__channel-list" role="list">
+					{
+						socialChannels.map((channel) => (
+							<li>
+								<a
+									href={channel.href}
+									class={`footer__channel-link footer__social-link footer__social-link--${channel.id}`}
+									target="_blank"
+									rel="noopener noreferrer"
+									aria-label={channel.ariaLabel}
+								>
+									<span class="footer__channel-border" aria-hidden="true"></span>
+									<span class="footer__channel-shine" aria-hidden="true"></span>
+									<span class="footer__channel-icon" aria-hidden="true">
+										{channel.id === 'facebook' && (
+											<svg viewBox="0 0 24 24" fill="currentColor">
+												<path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+											</svg>
+										)}
+										{channel.id === 'instagram' && (
+											<svg viewBox="0 0 24 24" fill="currentColor">
+												<path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+											</svg>
+										)}
+									</span>
+									<span class="footer__channel-text">
+										<span class="footer__channel-label">{channel.label}</span>
+										<span class="footer__channel-value">Follow us</span>
+									</span>
+								</a>
+							</li>
+						))
+					}
 				</ul>
 			</div>
 
-			<div class="footer__contact fade-right" style="animation-delay: 0.35s">
+			<!-- Contact channels -->
+			<div class="footer__contact footer-reveal" style={`--reveal-range: ${revealRange.contact}`}>
 				<p class="caption footer__col-label">Signal</p>
-				<ul class="footer__signal-list" role="list">
-					<li>
-						<a href={`mailto:${email}`} class="footer__channel-link footer__channel-link--email">
-							<span class="footer__channel-border" aria-hidden="true"></span>
-							<span class="footer__channel-shine" aria-hidden="true"></span>
-							<span class="footer__channel-icon" aria-hidden="true">
-								<svg viewBox="0 0 24 24" fill="none">
-									<rect x="2" y="4" width="20" height="16" rx="3" stroke="currentColor" stroke-width="1.5" />
-									<path d="M2 7l10 7 10-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-								</svg>
-							</span>
-							<span class="footer__channel-text">
-								<span class="footer__channel-label">Email</span>
-								<span class="footer__channel-value">{email}</span>
-							</span>
-						</a>
-					</li>
-					<li>
-						<a href={phoneHref} class="footer__channel-link footer__channel-link--phone">
-							<span class="footer__channel-border" aria-hidden="true"></span>
-							<span class="footer__channel-shine" aria-hidden="true"></span>
-							<span class="footer__channel-icon" aria-hidden="true">
-								<svg viewBox="0 0 24 24" fill="none">
-									<path
-										d="M8.5 3.5h7A2.5 2.5 0 0118 6v12a2.5 2.5 0 01-2.5 2.5h-7A2.5 2.5 0 016 18V6a2.5 2.5 0 012.5-2.5z"
-										stroke="currentColor"
-										stroke-width="1.5"
-									/>
-									<path d="M11 17.5h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-								</svg>
-							</span>
-							<span class="footer__channel-text">
-								<span class="footer__channel-label">Phone</span>
-								<span class="footer__channel-value">{phoneDisplay}</span>
-							</span>
-						</a>
-					</li>
+				<ul class="footer__channel-list" role="list">
+					{
+						contactChannels.map((channel) => (
+							<li>
+								<a
+									href={channel.href}
+									class={`footer__channel-link footer__channel-link--${channel.id}`}
+								>
+									<span class="footer__channel-border" aria-hidden="true"></span>
+									<span class="footer__channel-shine" aria-hidden="true"></span>
+									<span class="footer__channel-icon" aria-hidden="true">
+										{channel.id === 'email' && (
+											<svg viewBox="0 0 24 24" fill="none">
+												<rect x="2" y="4" width="20" height="16" rx="3" stroke="currentColor" stroke-width="1.5" />
+												<path d="M2 7l10 7 10-7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+											</svg>
+										)}
+										{channel.id === 'phone' && (
+											<svg viewBox="0 0 24 24" fill="none">
+												<path
+													d="M8.5 3.5h7A2.5 2.5 0 0118 6v12a2.5 2.5 0 01-2.5 2.5h-7A2.5 2.5 0 016 18V6a2.5 2.5 0 012.5-2.5z"
+													stroke="currentColor"
+													stroke-width="1.5"
+												/>
+												<path d="M11 17.5h2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+											</svg>
+										)}
+									</span>
+									<span class="footer__channel-text">
+										<span class="footer__channel-label">{channel.label}</span>
+										<span class="footer__channel-value">{channel.value}</span>
+									</span>
+								</a>
+							</li>
+						))
+					}
 				</ul>
 				<p class="legal-text footer__timezone">Earth · UTC+0</p>
 			</div>
 		</div>
 
-		<div class="footer__bar fade-in" style="animation-delay: 0.42s">
+		<div class="footer__bar footer-reveal" style={`--reveal-range: ${revealRange.bar}`}>
 			<p class="legal-text footer__copyright">
 				© {year} Portfolio. Crafted among the stars.
 			</p>
@@ -244,6 +252,7 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 </footer>
 
 <style>
+	/* ── Shell ── */
 	.footer {
 		--footer-ease: var(--ease-out);
 		position: relative;
@@ -254,59 +263,64 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 		isolation: isolate;
 	}
 
-	/* ── Aurora backdrop ── */
+	.footer__inner {
+		position: relative;
+		z-index: 1;
+	}
+
+	/* ── Aurora backdrop (static gradients, opacity-only pulse) ── */
 	.footer__aurora {
 		position: absolute;
 		inset: 0 0 auto;
-		height: 280px;
+		height: 240px;
 		pointer-events: none;
 		overflow: hidden;
+		contain: paint;
 		mask-image: linear-gradient(180deg, black 0%, transparent 100%);
 		-webkit-mask-image: linear-gradient(180deg, black 0%, transparent 100%);
 	}
 
 	.footer__aurora-band {
 		position: absolute;
-		width: 140%;
-		height: 120px;
-		left: -20%;
+		width: 130%;
+		height: 100px;
+		left: -15%;
 		border-radius: 50%;
-		filter: blur(48px);
-		opacity: 0.45;
+		opacity: 0.35;
 	}
 
 	.footer__aurora-band--1 {
-		top: -40px;
-		background: radial-gradient(ellipse, rgba(140, 80, 220, 0.55) 0%, transparent 70%);
-		animation: footer-aurora-drift 14s ease-in-out infinite;
+		top: -30px;
+		background: radial-gradient(ellipse, rgba(140, 80, 220, 0.45) 0%, transparent 72%);
+		animation: footer-aurora-fade 10s ease-in-out infinite;
 	}
 
 	.footer__aurora-band--2 {
-		top: 20px;
-		left: -10%;
-		background: radial-gradient(ellipse, rgba(100, 64, 180, 0.4) 0%, transparent 65%);
-		animation: footer-aurora-drift 18s ease-in-out infinite reverse;
+		top: 24px;
+		left: -5%;
+		background: radial-gradient(ellipse, rgba(100, 64, 180, 0.32) 0%, transparent 68%);
+		animation: footer-aurora-fade 14s ease-in-out infinite reverse;
 	}
 
 	.footer__aurora-band--3 {
-		top: 60px;
-		left: 30%;
-		background: radial-gradient(ellipse, rgba(200, 176, 255, 0.25) 0%, transparent 60%);
-		animation: footer-aurora-drift 22s ease-in-out infinite;
-		animation-delay: -6s;
+		top: 52px;
+		left: 28%;
+		background: radial-gradient(ellipse, rgba(200, 176, 255, 0.2) 0%, transparent 62%);
+		animation: footer-aurora-fade 18s ease-in-out infinite;
+		animation-delay: -5s;
 	}
 
-	@keyframes footer-aurora-drift {
+	@keyframes footer-aurora-fade {
 		0%,
 		100% {
-			transform: translate3d(0, 0, 0) scale(1);
+			opacity: 0.28;
 		}
 		50% {
-			transform: translate3d(4%, 8px, 0) scale(1.06);
+			opacity: 0.48;
 		}
 	}
 
-	/* ── Animated top beam ── */
+	/* ── Animated top beam (transform-only sweep) ── */
 	.footer__beam {
 		position: absolute;
 		top: 0;
@@ -314,6 +328,7 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 		right: 0;
 		height: 2px;
 		overflow: hidden;
+		pointer-events: none;
 	}
 
 	.footer__beam-line {
@@ -344,14 +359,14 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 			var(--color-accent),
 			transparent
 		);
-		filter: blur(2px);
-		box-shadow: 0 0 20px var(--color-accent-glow);
+		opacity: 0;
+		transform: translateX(-12vw);
 		animation: footer-beam-sweep 5s var(--footer-ease) infinite;
 	}
 
 	@keyframes footer-beam-sweep {
 		0% {
-			left: -10%;
+			transform: translateX(-12vw);
 			opacity: 0;
 		}
 		10% {
@@ -361,136 +376,29 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 			opacity: 1;
 		}
 		100% {
-			left: 110%;
+			transform: translateX(112vw);
 			opacity: 0;
 		}
 	}
 
-	/* ── Cosmos decoration layer ── */
-	.footer__cosmos {
-		position: absolute;
-		inset: 0;
-		pointer-events: none;
-		overflow: hidden;
+	/* ── Scroll-linked reveals (opacity only — compositor-friendly) ── */
+	.footer-reveal {
+		opacity: 1;
 	}
 
-	.footer__orbit-ring {
-		position: absolute;
-		top: 12%;
-		right: -8%;
-		width: clamp(180px, 28vw, 340px);
-		height: clamp(180px, 28vw, 340px);
-		border-radius: 50%;
-		border: 1px solid rgba(200, 176, 255, 0.12);
-		transform: rotateX(68deg);
-		animation: footer-orbit-spin 32s linear infinite;
-	}
-
-	.footer__orbit-dot {
-		position: absolute;
-		top: 14%;
-		right: calc(8% + clamp(90px, 14vw, 170px));
-		width: 6px;
-		height: 6px;
-		border-radius: 50%;
-		background: var(--color-accent-bright);
-		box-shadow: 0 0 14px var(--color-accent);
-		animation: footer-orbit-dot 32s linear infinite;
-		transform-origin: clamp(90px, 14vw, 170px) 0;
-	}
-
-	@keyframes footer-orbit-spin {
-		to {
-			transform: rotateX(68deg) rotateZ(360deg);
-		}
-	}
-
-	@keyframes footer-orbit-dot {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	.footer__star {
-		position: absolute;
-		width: var(--size);
-		height: var(--size);
-		border-radius: 50%;
-		background: var(--color-accent-bright);
-		opacity: var(--opacity);
-		box-shadow: 0 0 6px rgba(200, 176, 255, 0.5);
-		animation: footer-star-twinkle var(--duration) ease-in-out infinite;
-		animation-delay: var(--delay);
-	}
-
-	@keyframes footer-star-twinkle {
-		0%,
-		100% {
-			opacity: calc(var(--opacity) * 0.5);
-			transform: scale(1);
-		}
-		50% {
-			opacity: var(--opacity);
-			transform: scale(1.4);
-		}
-	}
-
-	.footer__constellation {
-		position: absolute;
-		bottom: 18%;
-		right: 4%;
-		width: min(320px, 40vw);
-		color: rgba(200, 176, 255, 0.2);
-		opacity: 0.7;
-	}
-
-	.footer__constellation-path {
-		stroke-dasharray: 400;
-		stroke-dashoffset: 400;
-		animation: footer-draw-line 4s var(--footer-ease) forwards;
-		animation-delay: 0.6s;
-	}
-
-	.footer__constellation-node {
-		fill: var(--color-accent);
-		opacity: 0;
-		animation: footer-node-pop 0.5s var(--footer-ease) forwards;
-	}
-
-	.footer__constellation-node:nth-child(2) {
-		animation-delay: 1.2s;
-	}
-	.footer__constellation-node:nth-child(3) {
-		animation-delay: 1.5s;
-	}
-	.footer__constellation-node:nth-child(4) {
-		animation-delay: 1.8s;
-	}
-	.footer__constellation-node:nth-child(5) {
-		animation-delay: 2.1s;
-	}
-
-	@keyframes footer-draw-line {
-		to {
-			stroke-dashoffset: 0;
-		}
-	}
-
-	@keyframes footer-node-pop {
-		from {
+	@supports (animation-timeline: view()) {
+		.footer-reveal {
 			opacity: 0;
-			transform: scale(0);
-		}
-		to {
-			opacity: 0.85;
-			transform: scale(1);
+			animation: footer-reveal linear both;
+			animation-timeline: view();
+			animation-range: var(--reveal-range, entry 0% entry 25%);
 		}
 	}
 
-	/* ── Inner layout ── */
-	.footer__inner {
-		position: relative;
-		z-index: 1;
+	@keyframes footer-reveal {
+		to {
+			opacity: 1;
+		}
 	}
 
 	/* ── CTA panel ── */
@@ -524,12 +432,10 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 	@keyframes footer-cta-glow {
 		0%,
 		100% {
-			transform: translate3d(0, 0, 0);
-			opacity: 0.6;
+			opacity: 0.45;
 		}
 		50% {
-			transform: translate3d(15%, 0, 0);
-			opacity: 1;
+			opacity: 0.85;
 		}
 	}
 
@@ -558,7 +464,7 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 		margin: var(--space-xl) 0;
 	}
 
-	/* ── Grid columns ── */
+	/* ── Content grid ── */
 	.footer__grid {
 		display: grid;
 		grid-template-columns: 1.4fr repeat(3, 1fr);
@@ -570,65 +476,20 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 		color: var(--color-text-subtle);
 	}
 
-	/* ── Brand (matches navbar orbit logo) ── */
+	/* ── Brand ── */
 	.footer__brand-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.65rem;
+		display: inline-block;
 		margin-bottom: var(--space-sm);
 		text-decoration: none;
 		color: var(--color-text-primary);
 		font-size: 1rem;
 		font-weight: 500;
 		letter-spacing: 0.03em;
-		flex-shrink: 0;
 		transition: color 0.2s ease;
 	}
 
 	.footer__brand-link:hover {
 		color: var(--color-accent-bright);
-	}
-
-	.footer__brand-orbit {
-		position: relative;
-		width: 1.75rem;
-		height: 1.75rem;
-		flex-shrink: 0;
-	}
-
-	.footer__brand-core {
-		position: absolute;
-		inset: 35%;
-		border-radius: 50%;
-		background: var(--color-accent);
-		box-shadow: 0 0 12px rgba(200, 176, 255, 0.6);
-	}
-
-	.footer__brand-ring {
-		position: absolute;
-		inset: 0;
-		border-radius: 50%;
-		border: 1px solid rgba(200, 176, 255, 0.35);
-		animation: footer-brand-orbit-spin 6s linear infinite;
-	}
-
-	.footer__brand-ring::after {
-		content: "";
-		position: absolute;
-		top: -2px;
-		left: 50%;
-		width: 4px;
-		height: 4px;
-		margin-left: -2px;
-		border-radius: 50%;
-		background: #fff;
-		box-shadow: 0 0 6px rgba(200, 176, 255, 0.9);
-	}
-
-	@keyframes footer-brand-orbit-spin {
-		to {
-			transform: rotate(360deg);
-		}
 	}
 
 	.footer__brand-text {
@@ -646,34 +507,7 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 		margin-bottom: var(--space-sm);
 	}
 
-	.footer__status {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-
-	.footer__status-dot {
-		width: 6px;
-		height: 6px;
-		border-radius: 50%;
-		background: var(--color-signal);
-		box-shadow: 0 0 8px var(--color-signal-glow);
-		animation: footer-status-pulse 2.4s ease-in-out infinite;
-	}
-
-	@keyframes footer-status-pulse {
-		0%,
-		100% {
-			opacity: 0.7;
-			transform: scale(1);
-		}
-		50% {
-			opacity: 1;
-			transform: scale(1.2);
-		}
-	}
-
-	/* ── Footer nav — shared .navbar__link classes; pill sits inside each link ── */
+	/* ── Footer nav (navbar link styles; glow/trail hidden in global.css) ── */
 	.footer__nav-links {
 		position: relative;
 		display: flex;
@@ -681,13 +515,11 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 		align-items: flex-start;
 		gap: 0.15rem;
 		margin: 0;
-		list-style: none;
 		padding: 0;
 	}
 
-	/* ── Channel cards — social + signal ── */
-	.footer__social-list,
-	.footer__signal-list {
+	/* ── Channel cards (social + contact) ── */
+	.footer__channel-list {
 		display: flex;
 		flex-direction: column;
 		gap: 0.65rem;
@@ -766,6 +598,7 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 		word-break: break-word;
 	}
 
+	/* Animated conic border + shine sweep on hover */
 	.footer__channel-border {
 		position: absolute;
 		inset: 0;
@@ -834,6 +667,11 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 		transform: scale(1.08);
 	}
 
+	@keyframes footer-border-spin {
+		to { --footer-border-angle: 360deg; }
+	}
+
+	/* Contact channel accent colors */
 	.footer__channel-link--email:hover .footer__channel-icon,
 	.footer__channel-link--email:focus-visible .footer__channel-icon {
 		color: var(--color-accent-bright);
@@ -854,11 +692,7 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 		color: var(--color-signal);
 	}
 
-	.footer__social-link:hover,
-	.footer__social-link:focus-visible {
-		box-shadow: 0 12px 32px rgba(100, 64, 180, 0.25);
-	}
-
+	/* Social channel brand colors */
 	.footer__social-link--facebook:hover,
 	.footer__social-link--facebook:focus-visible {
 		background:
@@ -868,6 +702,7 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 			inset 0 1px 0 rgba(255, 255, 255, 0.1),
 			0 12px 32px rgba(24, 119, 242, 0.2);
 	}
+
 	.footer__social-link--facebook:hover .footer__channel-icon,
 	.footer__social-link--facebook:focus-visible .footer__channel-icon {
 		color: #4d9fff;
@@ -904,18 +739,12 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 		color: #f77737;
 	}
 
-	@keyframes footer-border-spin {
-		to {
-			--footer-border-angle: 360deg;
-		}
-	}
-
 	.footer__timezone {
 		margin-top: var(--space-sm);
 		opacity: 0.7;
 	}
 
-	/* ── Bottom bar ── */
+	/* ── Copyright bar ── */
 	.footer__bar {
 		margin-top: var(--space-xl);
 		padding-top: var(--space-md);
@@ -936,9 +765,58 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 		.footer__brand {
 			grid-column: 1 / -1;
 		}
+	}
 
-		.footer__constellation {
+	/* Hamburger breakpoint — stacked rows, centered content */
+	@media (max-width: 768px) {
+		.footer__beam-glow {
 			display: none;
+		}
+
+		.footer__cta-glow {
+			opacity: 0.5;
+		}
+
+		.footer__cta-panel {
+			flex-direction: column;
+			align-items: center;
+			text-align: center;
+		}
+
+		.footer__cta-content {
+			max-width: none;
+		}
+
+		.footer__cta-desc {
+			margin-inline: auto;
+		}
+
+		.footer__grid {
+			grid-template-columns: 1fr;
+			gap: var(--space-lg);
+			text-align: center;
+		}
+
+		.footer__brand {
+			grid-column: auto;
+		}
+
+		.footer__brand-tagline {
+			margin-inline: auto;
+		}
+
+		.footer__nav-links {
+			align-items: center;
+		}
+
+		.footer__channel-list {
+			width: 100%;
+			max-width: 22rem;
+			margin-inline: auto;
+		}
+
+		.footer__timezone {
+			text-align: center;
 		}
 	}
 
@@ -948,45 +826,33 @@ const footerStars = Array.from({ length: 14 }, (_, i) => ({
 		}
 
 		.footer__grid {
-			grid-template-columns: 1fr;
 			gap: var(--space-md);
-		}
-
-		.footer__cta-panel {
-			flex-direction: column;
-			align-items: flex-start;
 		}
 
 		.footer__cta-panel .cta-btn {
 			width: 100%;
-		}
-
-		.footer__orbit-ring,
-		.footer__orbit-dot {
-			display: none;
+			max-width: 22rem;
 		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
 		.footer__aurora-band,
 		.footer__beam-glow,
-		.footer__orbit-ring,
-		.footer__orbit-dot,
-		.footer__star,
-		.footer__brand-ring,
-		.footer__status-dot,
-		.footer__cta-glow,
-		.footer__constellation-path,
-		.footer__constellation-node {
+		.footer__cta-glow {
 			animation: none !important;
 		}
 
-		.footer__constellation-path {
-			stroke-dashoffset: 0;
+		.footer__aurora-band {
+			opacity: 0.35;
 		}
 
-		.footer__constellation-node {
-			opacity: 0.85;
+		.footer__cta-glow {
+			opacity: 0.55;
+		}
+
+		.footer-reveal {
+			animation: none !important;
+			opacity: 1 !important;
 		}
 	}
 </style>

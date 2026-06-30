@@ -417,6 +417,20 @@ ol {
   border-radius: 50%;
   background: var(--color-signal);
   box-shadow: 0 0 10px var(--color-signal-glow);
+  animation: badge-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.6;
+    transform: scale(0.85);
+  }
 }
 
 /* ============================================
@@ -774,6 +788,12 @@ ol {
   opacity: 1;
 }
 
+/* Footer nav — skip desktop comet/glow effects (cheaper on mobile scroll) */
+.footer__nav-links .navbar__link-glow,
+.footer__nav-links .navbar__link-trail {
+  display: none;
+}
+
 .navbar__indicator::before,
 .navbar__link-pill::before {
   content: "";
@@ -917,6 +937,12 @@ ol {
     animation: none !important;
     opacity: 1 !important;
     transform: none !important;
+  }
+
+  .badge__dot {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
   }
 
   .navbar__link-trail::after,

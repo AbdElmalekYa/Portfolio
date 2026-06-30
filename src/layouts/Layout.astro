@@ -96,6 +96,9 @@ const pageTitle = title.includes(siteName) ? title : `${title} · ${siteName}`;
 		);
 
 		for (const el of elements) {
+			// Footer uses CSS view() timelines — skip global fade observer
+			if (el.closest('[data-footer]')) continue;
+
 			const inViewport = el.getBoundingClientRect().top < window.innerHeight;
 			if (inViewport) {
 				el.style.animationPlayState = 'running';
@@ -106,10 +109,14 @@ const pageTitle = title.includes(siteName) ? title : `${title} · ${siteName}`;
 		}
 	};
 
-	if (document.readyState === 'loading') {
-		document.addEventListener('DOMContentLoaded', initFadeOnScroll, { once: true });
-	} else {
+	const init = () => {
 		initFadeOnScroll();
+	};
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', init, { once: true });
+	} else {
+		init();
 	}
 </script>
 
