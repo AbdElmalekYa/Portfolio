@@ -1,7 +1,7 @@
 ---
 /**
  * Footer — contact CTA, navigation, social links, and lightweight backdrop.
- * Scroll reveals use compositor-friendly view() timelines (see .footer-reveal).
+ * Scroll reveals: opacity-only fades via IntersectionObserver (see .footer-reveal).
  * Global StarField + NebulaSky provide the cosmic atmosphere.
  */
 
@@ -67,15 +67,15 @@ const contactChannels: ContactChannel[] = [
 	{ id: 'phone', href: phoneHref, label: 'Phone', value: phoneDisplay },
 ];
 
-/** Scroll-linked reveal ranges (animation-timeline: view) — stagger without JS */
-const revealRange = {
-	cta: 'entry 0% entry 18%',
-	divider: 'entry 2% entry 20%',
-	brand: 'entry 4% entry 22%',
-	nav: 'entry 6% entry 24%',
-	social: 'entry 8% entry 26%',
-	contact: 'entry 10% entry 28%',
-	bar: 'entry 12% entry 30%',
+/** Stagger delays for opacity-only scroll reveals */
+const revealDelay = {
+	cta: '0.05s',
+	divider: '0.1s',
+	brand: '0.14s',
+	nav: '0.18s',
+	social: '0.24s',
+	contact: '0.3s',
+	bar: '0.36s',
 } as const;
 
 const year = new Date().getFullYear();
@@ -98,7 +98,7 @@ const year = new Date().getFullYear();
 		<!-- CTA panel -->
 		<div
 			class="footer__cta-panel glass-panel footer-reveal"
-			style={`--reveal-range: ${revealRange.cta}`}
+			style={`--reveal-delay: ${revealDelay.cta}`}
 		>
 			<div class="footer__cta-glow" aria-hidden="true"></div>
 			<div class="footer__cta-content">
@@ -124,11 +124,11 @@ const year = new Date().getFullYear();
 			</a>
 		</div>
 
-		<hr class="divider footer__divider footer-reveal" style={`--reveal-range: ${revealRange.divider}`} />
+		<hr class="divider footer__divider footer-reveal" style={`--reveal-delay: ${revealDelay.divider}`} />
 
 		<div class="footer__grid">
 			<!-- Brand column -->
-			<div class="footer__brand footer-reveal" style={`--reveal-range: ${revealRange.brand}`}>
+			<div class="footer__brand footer-reveal" style={`--reveal-delay: ${revealDelay.brand}`}>
 				<a href="#home" class="footer__brand-link">
 					<span class="footer__brand-text">Portfolio</span>
 				</a>
@@ -142,7 +142,7 @@ const year = new Date().getFullYear();
 			</div>
 
 			<!-- Navigation — reuses navbar link styles; active state synced via data-nav-link -->
-			<nav class="footer__nav footer-reveal" style={`--reveal-range: ${revealRange.nav}`} aria-label="Footer navigation">
+			<nav class="footer__nav footer-reveal" style={`--reveal-delay: ${revealDelay.nav}`} aria-label="Footer navigation">
 				<p class="caption footer__col-label">Navigate</p>
 				<ul class="navbar__links footer__nav-links" role="list">
 					{
@@ -161,7 +161,7 @@ const year = new Date().getFullYear();
 			</nav>
 
 			<!-- Social channels -->
-			<div class="footer__social footer-reveal" style={`--reveal-range: ${revealRange.social}`}>
+			<div class="footer__social footer-reveal" style={`--reveal-delay: ${revealDelay.social}`}>
 				<p class="caption footer__col-label">Connect</p>
 				<ul class="footer__channel-list" role="list">
 					{
@@ -200,7 +200,7 @@ const year = new Date().getFullYear();
 			</div>
 
 			<!-- Contact channels -->
-			<div class="footer__contact footer-reveal" style={`--reveal-range: ${revealRange.contact}`}>
+			<div class="footer__contact footer-reveal" style={`--reveal-delay: ${revealDelay.contact}`}>
 				<p class="caption footer__col-label">Signal</p>
 				<ul class="footer__channel-list" role="list">
 					{
@@ -243,13 +243,79 @@ const year = new Date().getFullYear();
 			</div>
 		</div>
 
-		<div class="footer__bar footer-reveal" style={`--reveal-range: ${revealRange.bar}`}>
+		<div class="footer__bar footer-reveal" style={`--reveal-delay: ${revealDelay.bar}`}>
 			<p class="legal-text footer__copyright">
 				© {year} Portfolio. Crafted among the stars.
 			</p>
 		</div>
 	</div>
 </footer>
+
+<script>
+	const initFooterReveals = () => {
+		document.documentElement.classList.add('js-footer-reveals');
+
+		const footer = document.querySelector('[data-footer]');
+		if (!footer) return;
+
+		const items = footer.querySelectorAll<HTMLElement>('.footer-reveal');
+		if (!items.length) return;
+
+		const reveal = (el: HTMLElement) => el.classList.add('is-visible');
+
+		if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			items.forEach(reveal);
+			return;
+		}
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				for (const entry of entries) {
+					if (!entry.isIntersecting) continue;
+					reveal(entry.target as HTMLElement);
+					observer.unobserve(entry.target);
+				}
+			},
+			{ threshold: 0.06, rootMargin: '0px 0px -32px 0px' },
+		);
+
+		for (const el of items) {
+			if (el.getBoundingClientRect().top < window.innerHeight * 0.92) {
+				reveal(el);
+			} else {
+				observer.observe(el);
+			}
+		}
+	};
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', initFooterReveals, { once: true });
+	} else {
+		initFooterReveals();
+	}
+</script>
+
+<style is:global>
+	@keyframes footer-reveal-kf {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	/* Hidden only when JS is active — visible by default (no-JS / observer fallback) */
+	html.js-footer-reveals [data-footer] .footer-reveal:not(.is-visible) {
+		opacity: 0;
+		animation: footer-reveal-kf 0.55s var(--ease-out) both paused;
+		animation-delay: var(--reveal-delay, 0s);
+	}
+
+	html.js-footer-reveals [data-footer] .footer-reveal.is-visible {
+		animation-play-state: running;
+	}
+</style>
 
 <style>
 	/* ── Shell ── */
@@ -381,24 +447,9 @@ const year = new Date().getFullYear();
 		}
 	}
 
-	/* ── Scroll-linked reveals (opacity only — compositor-friendly) ── */
+	/* Visible by default — JS gates the hidden state in the global block above */
 	.footer-reveal {
 		opacity: 1;
-	}
-
-	@supports (animation-timeline: view()) {
-		.footer-reveal {
-			opacity: 0;
-			animation: footer-reveal linear both;
-			animation-timeline: view();
-			animation-range: var(--reveal-range, entry 0% entry 25%);
-		}
-	}
-
-	@keyframes footer-reveal {
-		to {
-			opacity: 1;
-		}
 	}
 
 	/* ── CTA panel ── */
